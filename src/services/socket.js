@@ -2,9 +2,7 @@ import { io } from 'socket.io-client';
 
 let socket = null;
 
-const SOCKET_URL = window.location.port === '5173'
-  ? 'http://localhost:3005'
-  : window.location.origin;
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3005';
 
 export function getSocket() {
   if (!socket) {

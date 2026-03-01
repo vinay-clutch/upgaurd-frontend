@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getSocket } from '../services/socket';
-import { api } from '../services/api';
+import { api, API_BASE_URL } from '../services/api';
 import { LoadingSpinner } from './LoadingSpinner';
 import { toast } from 'react-hot-toast';
 import { StatusBadge } from './StatusBadge';
@@ -408,7 +408,7 @@ export const WebsiteDetails = () => {
                     try {
                       const token = localStorage.getItem('token');
                       const response = await fetch(
-                        `/api/v1/websites/${id}/report/pdf`,
+                        `${API_BASE_URL}/websites/${id}/report/pdf`,
                         { headers: { 'Authorization': `Bearer ${token}` } }
                       );
                       const html = await response.text();
@@ -693,7 +693,7 @@ export const WebsiteDetails = () => {
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Preview</p>
                   <div className="bg-black/20 rounded-xl p-8 border border-white/5 flex items-center justify-center">
                     <img 
-                      src={`${window.location.port === '5173' ? 'http://localhost:3005' : window.location.origin}/api/v1/websites/badge/${id}?t=${Date.now()}`} 
+                      src={`${API_BASE_URL}/websites/badge/${id}?t=${Date.now()}`} 
                       alt="Uptime Badge" 
                       className="shadow-2xl"
                     />
@@ -716,14 +716,14 @@ export const WebsiteDetails = () => {
                       </button>
                     </div>
                       <code className="block bg-slate-950 border border-white/10 rounded-lg p-3 text-[11px] text-slate-300 break-all">
-                        {`![Uptime](${window.location.port === '5173' ? 'http://localhost:3005' : window.location.origin}/api/v1/websites/badge/${id})`}
+                        {`![Uptime](${API_BASE_URL}/websites/badge/${id})`}
                       </code>
                   </div>
 
                   <div className="space-y-2">
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">HTML</p>
                     <code className="block bg-slate-950 border border-white/10 rounded-lg p-3 text-[11px] text-slate-300 break-all">
-                      {`<img src="${window.location.port === '5173' ? 'http://localhost:3005' : window.location.origin}/api/v1/websites/badge/${id}" alt="Uptime Status">`}
+                      {`<img src="${API_BASE_URL}/websites/badge/${id}" alt="Uptime Status">`}
                     </code>
                   </div>
 
