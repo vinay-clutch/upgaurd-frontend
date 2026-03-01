@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+.status-up { color: #10b981; }
+.status-down { color: #ef4444; }
+.status-unknown { color: #6b7280; }
+
+.bg-status-up { background-color: #10b981; }
+.bg-status-down { background-color: #ef4444; }
+.bg-status-unknown { background-color: #6b7280; }
+
+.loading-spinner {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(3600deg); } /* Note: was 360deg, but usually 360deg is enough, restoring original state */
+}
+ @keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
