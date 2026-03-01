@@ -53,7 +53,7 @@ export function HeroSection() {
                                 >
                                     <h1
                                         className="mt-8 max-w-2xl text-balance text-5xl font-medium md:text-6xl lg:mt-16 text-white leading-tight">
-                                        Monitor Your Digital Health with <span className="text-primary">UpGuard</span>
+                                        Monitor Your Digital Health with <span className="text-primary">Antigravtiven</span>
                                     </h1>
                                     <p
                                         className="mt-8 max-w-2xl text-pretty text-lg text-muted-foreground">
@@ -172,7 +172,7 @@ export const HeroHeader = () => {
                         <div className="flex items-center gap-12">
                             <Link to="/" className="flex items-center space-x-2">
                                 <span className="text-2xl">🛡️</span>
-                                <span className="text-xl font-bold tracking-tighter text-white">UpGuard</span>
+                                <span className="text-xl font-bold tracking-tighter text-white">Antigravtiven</span>
                             </Link>
 
                             <div className="hidden md:block">

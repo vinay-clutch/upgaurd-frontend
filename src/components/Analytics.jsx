@@ -19,7 +19,7 @@ export const Analytics = () => {
   const [copying, setCopying] = useState(false);
 
   useEffect(() => {
-    document.title = 'Analytics | UpGuard';
+    document.title = 'Analytics | Antigravtiven';
     loadAnalytics();
   }, [websiteId]);
 
