@@ -3,20 +3,14 @@ import { API_BASE_URL } from './api';
 
 let socket = null;
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || API_BASE_URL?.replace('/api/v1', '');
+// Derived strictly from the production API URL
+const SOCKET_URL = API_BASE_URL?.replace('/api/v1', '');
 
 export function getSocket() {
   if (!socket) {
     socket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling']
-    });
-    
-    socket.on('connect', () => {
-      console.log('WebSocket connected!');
-    });
-    
-    socket.on('disconnect', () => {
-      console.log('WebSocket disconnected');
+      transports: ['websocket', 'polling'],
+      withCredentials: true // For production cross-domain sessions
     });
   }
   return socket;

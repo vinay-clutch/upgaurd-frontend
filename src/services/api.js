@@ -7,6 +7,7 @@ const request = async (endpoint, options = {}) => {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     },
+    credentials: 'include', // Ensure cookies are sent (for sessions)
     ...options,
   };
   
@@ -22,7 +23,6 @@ const request = async (endpoint, options = {}) => {
     
     if (!response.ok) {
       const message = data?.message || 'Request failed';
-      console.error(`API Error [${endpoint}]:`, message, data);
       throw new Error(message);
     }
     
@@ -44,7 +44,6 @@ const signin = (username, password) =>
     body: JSON.stringify({ username, password }),
   });
 
-// New OAuth function
 const initiateGoogleAuth = () => {
   window.location.href = `${API_BASE_URL}/auth/google`;
 };
@@ -63,6 +62,7 @@ const createWebsite = (url) =>
     method: 'POST',
     body: JSON.stringify({ url }),
   });
+
 const getWebsiteStatus = (websiteId) => request(`/websites/${websiteId}/status`);
 
 const pauseWebsite = (websiteId) =>
@@ -94,7 +94,6 @@ const removeDiscordWebhook = () =>
     method: 'DELETE',
   });
 
-// Analytics
 const enableAnalytics = (websiteId) =>
   request(`/analytics/${websiteId}/enable`, { method: 'POST' });
 
@@ -104,20 +103,23 @@ const getAnalytics = (websiteId) =>
 const resolveError = (errorId) =>
   request(`/analytics/errors/${errorId}/resolve`, { method: 'PATCH' });
 
-// PDF Report
 const downloadPdfReport = async (websiteId) => {
   const token = localStorage.getItem('token');
   const response = await fetch(
     `${API_BASE_URL}/websites/${websiteId}/report/pdf`,
-    { headers: { 'Authorization': `Bearer ${token}` } }
+    { 
+      headers: { 'Authorization': `Bearer ${token}` },
+      credentials: 'include'
+    }
   );
   const html = await response.text();
   const newTab = window.open();
-  newTab.document.write(html);
-  newTab.document.close();
+  if (newTab) {
+    newTab.document.write(html);
+    newTab.document.close();
+  }
 };
 
-// Slack Integration
 const updateSlackWebhook = (webhookUrl) =>
   request('/websites/user/slack', {
     method: 'PUT',
@@ -132,13 +134,16 @@ const updateWebsiteTags = (websiteId, tags) =>
     method: 'PUT',
     body: JSON.stringify({ tags })
   });
+
 const getSecurityHeaders = (websiteId) =>
   request(`/websites/${websiteId}/security`);
+
 const updateCheckInterval = (websiteId, interval) =>
   request(`/websites/${websiteId}/interval`, {
     method: 'PUT',
     body: JSON.stringify({ interval })
   });
+
 const setMaintenance = (websiteId, start, end, note) =>
   request(`/websites/${websiteId}/maintenance`, {
     method: 'PUT',
@@ -154,7 +159,10 @@ const exportCsv = async (websiteId, days = 30) => {
   const token = localStorage.getItem('token');
   const response = await fetch(
     `${API_BASE_URL}/websites/${websiteId}/export/csv?days=${days}`,
-    { headers: { 'Authorization': `Bearer ${token}` } }
+    { 
+      headers: { 'Authorization': `Bearer ${token}` },
+      credentials: 'include'
+    }
   );
   if (!response.ok) throw new Error('Export failed');
   const blob = await response.blob();
