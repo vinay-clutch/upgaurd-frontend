@@ -174,7 +174,7 @@ export function Landing() {
   
   useEffect(() => {
     if (token) navigate("/dashboard");
-    document.title = "UpGuard — Prevent Downtime";
+    document.title = "Antigravtiven — Prevent Downtime";
   }, [token, navigate]);
 
   return (
@@ -333,7 +333,7 @@ export function Landing() {
           gap: "10px", fontWeight: "800",
           fontSize: "20px", color: "white"
         }}>
-          🛡️ UpGuard
+          🛡️ Antigravtiven
         </div>
         <div style={{ display: "flex", gap: "12px" }}>
           <button
@@ -554,7 +554,7 @@ export function Landing() {
                   fontSize:"14px", marginBottom:"24px",
                   display:"flex", alignItems:"center", gap:"6px"
                 }}>
-                  🛡️ UpGuard
+                  🛡️ Antigravtiven
                 </div>
                 {["Dashboard","Websites","Analytics",
                   "Incidents","Settings"].map((item, i) => (
@@ -786,7 +786,7 @@ export function Landing() {
             color:"#64748b", fontSize:"16px",
             lineHeight:1.7, marginBottom:"28px"
           }}>
-            UpGuard monitors your websites every 60 seconds
+            Antigravtiven monitors your websites every 60 seconds
             from multiple regions. Get notified the second
             your global status changes.
           </p>
@@ -1125,7 +1125,7 @@ export function Landing() {
           margin:"0 auto 44px",
           lineHeight:1.7
         }}>
-          Join 500+ developers who trust UpGuard to keep
+          Join 500+ developers who trust Antigravtiven to keep
           their services running. No credit card required.
         </p>
         <button
@@ -1169,7 +1169,7 @@ export function Landing() {
               display:"flex",
               alignItems:"center", gap:"8px"
             }}>
-              🛡️ UpGuard
+              🛡️ Antigravtiven
             </div>
             <p style={{
               color:"#334155",
@@ -1231,7 +1231,7 @@ export function Landing() {
           <span style={{
             color:"#1e293b", fontSize:"13px"
           }}>
-            © 2026 UpGuard Technologies. 
+            © 2026 Antigravtiven Technologies. 
             Built for the developer web.
           </span>
           <span style={{

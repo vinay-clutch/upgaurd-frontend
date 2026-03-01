@@ -12,7 +12,7 @@ export const SecurityCheck = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    document.title = 'Security Check | UpGuard';
+    document.title = 'Security Check | Antigravtiven';
     const fetchReport = async () => {
       try {
         const data = await api.getSecurityHeaders(id);

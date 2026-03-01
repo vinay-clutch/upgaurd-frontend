@@ -1,8 +1,9 @@
 import { io } from 'socket.io-client';
+import { API_BASE_URL } from './api';
 
 let socket = null;
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3005';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || API_BASE_URL?.replace('/api/v1', '');
 
 export function getSocket() {
   if (!socket) {

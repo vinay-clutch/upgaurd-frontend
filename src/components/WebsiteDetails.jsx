@@ -130,7 +130,7 @@ export const WebsiteDetails = () => {
 
   useEffect(() => {
     if (details?.url) {
-      document.title = `${details.url.replace(/^https?:\/\//, '')} | UpGuard`;
+      document.title = `${details.url.replace(/^https?:\/\//, '')} | Antigravtiven`;
     }
     if (id) {
       fetchDetails();
@@ -160,7 +160,7 @@ export const WebsiteDetails = () => {
     setConfirmConfig({
       title: isPaused ? 'Resume Monitoring?' : 'Pause Monitoring?',
       message: isPaused 
-        ? `UpGuard will start checking ${details.url} again from multiple global regions.`
+        ? `Antigravtiven will start checking ${details.url} again from multiple global regions.`
         : `Monitoring for ${details.url} will be stopped immediately. No status updates or alerts will be sent while paused.`,
       confirmText: isPaused ? 'Resume Checks' : 'Stop Checks',
       type: isPaused ? 'resume' : 'pause',

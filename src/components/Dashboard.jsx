@@ -39,7 +39,7 @@ export const Dashboard = () => {
   const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
-    document.title = 'Dashboard | UpGuard';
+    document.title = 'Dashboard | Antigravtiven';
     void loadWebsites();
     // Poll every 30 seconds as backup
     const interval = setInterval(loadWebsites, 30000);

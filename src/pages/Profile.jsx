@@ -13,7 +13,7 @@ export const Profile = () => {
     const [activeTab, setActiveTab] = useState('account');
 
     useEffect(() => {
-        document.title = 'Profile | UpGuard';
+        document.title = 'Profile | Antigravtiven';
         if (userProfile) {
             setEmail(userProfile.email || '');
             setDiscordUrl(userProfile.discord_webhook || '');

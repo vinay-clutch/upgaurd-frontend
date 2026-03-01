@@ -125,7 +125,7 @@ export const Navbar = () => {
           <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center group">
               <i className="fas fa-heartbeat text-indigo-400 text-xl mr-2 group-hover:scale-110 transition-transform" />
-              <h1 className="text-xl font-semibold tracking-tight">UpGuard</h1>
+              <h1 className="text-xl font-semibold tracking-tight">Antigravtiven</h1>
             </Link>
           </div>
 
