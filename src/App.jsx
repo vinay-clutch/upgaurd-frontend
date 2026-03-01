@@ -35,6 +35,7 @@ function App() {
     if (user) return <Navigate to="/dashboard" replace />;
     return children;
   };
+  console.log("API URL:", import.meta.env.VITE_API_URL);
 
   return (
     <ErrorBoundary>
