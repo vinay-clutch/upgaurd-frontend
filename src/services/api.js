@@ -1,6 +1,4 @@
-const API_BASE_URL = window.location.port === '5173' 
-  ? 'http://localhost:3005/api/v1'
-  : '/api/v1';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3005/api/v1';
 
 const request = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
