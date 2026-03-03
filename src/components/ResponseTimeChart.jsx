@@ -12,61 +12,81 @@ export const ResponseTimeChart = ({ data }) => {
   })).reverse(); 
 
   return (
-    <div style={{ width: '100%', height: 300 }}>
+    <div style={{ width: '100%', height: 350 }}>
       <ResponsiveContainer>
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorConnection" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#00f09a" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#00f09a" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#bc2c12" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#bc2c12" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorTls" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#ea580c" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#ea580c" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorData" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#22d3ee" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#f97316" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
-          <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} />
-          <YAxis stroke="#94a3b8" fontSize={12} unit="ms" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.05)" />
+          <XAxis 
+            dataKey="time" 
+            stroke="#475569" 
+            fontSize={10} 
+            tickLine={false}
+            axisLine={false}
+            tick={{ fontWeight: 800, letterSpacing: '1px' }}
+          />
+          <YAxis 
+            stroke="#475569" 
+            fontSize={10} 
+            unit="ms" 
+            tickLine={false}
+            axisLine={false}
+            tick={{ fontWeight: 800 }}
+          />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(30, 41, 59, 0.9)',
-              borderColor: 'rgba(255, 255, 255, 0.2)',
-              borderRadius: '0.5rem'
+              backgroundColor: '#0c0c0e',
+              borderColor: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '16px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+              padding: '12px'
             }}
-            labelStyle={{ color: '#cbd5e1' }}
+            itemStyle={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}
+            labelStyle={{ color: '#bc2c12', fontWeight: 900, marginBottom: '8px', fontSize: '10px' }}
           />
 
           <Area
             type="monotone"
             dataKey="connection_time_ms"
             stackId="1"
-            stroke="#00f09a"
+            stroke="#bc2c12"
+            strokeWidth={3}
             fillOpacity={1}
             fill="url(#colorConnection)"
-            name="Connection"
+            name="NET CONNECT"
           />
           <Area
             type="monotone"
             dataKey="tls_handshake_time_ms"
             stackId="1"
-            stroke="#06b6d4"
+            stroke="#ea580c"
+            strokeWidth={3}
             fillOpacity={1}
             fill="url(#colorTls)"
-            name="TLS Handshake"
+            name="TLS SECURE"
           />
            <Area
             type="monotone"
             dataKey="data_transfer_time_ms"
             stackId="1"
-            stroke="#22d3ee"
+            stroke="#f97316"
+            strokeWidth={3}
             fillOpacity={1}
             fill="url(#colorData)"
-            name="Data Transfer"
+            name="TRANSFER"
           />
         </AreaChart>
       </ResponsiveContainer>

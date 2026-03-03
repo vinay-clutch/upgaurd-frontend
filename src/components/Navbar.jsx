@@ -119,13 +119,15 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="border-b border-white/10 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
+    <nav className="border-b border-white/5 bg-[#050505]/80 backdrop-blur-xl sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center group">
-              <i className="fas fa-heartbeat text-[#00f09a] text-xl mr-2 group-hover:scale-110 transition-transform" />
-              <h1 className="text-xl font-bold tracking-tight text-white">UpGuard</h1>
+              <div className="w-8 h-8 mr-3 bg-[#bc2c12]/10 rounded-lg flex items-center justify-center border border-[#bc2c12]/20 group-hover:scale-110 transition-transform">
+                <i className="fas fa-shield-alt text-[#bc2c12] text-lg" />
+              </div>
+              <h1 className="text-xl font-black tracking-tighter text-white">UpGuard</h1>
             </Link>
           </div>
 
@@ -136,123 +138,104 @@ export const Navbar = () => {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center space-x-3 px-3 py-1.5 rounded-full hover:bg-white/5 transition-colors border border-transparent hover:border-white/10"
                 >
-                  <div className="flex items-center space-x-2 text-sm text-slate-300">
-                    <span className="hidden sm:inline-block font-medium">{userProfile.username || userProfile.name}</span>
+                  <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+                    <span className="hidden sm:inline-block hover:text-white transition-colors">{userProfile.username || userProfile.name}</span>
                     {userProfile.email && (
-                      <span className="text-slate-500 text-xs bg-[#00f09a]/10 px-2 py-0.5 rounded-full flex items-center">
-                        <i className="fas fa-bell text-[10px] mr-1" />
-                        {userProfile.email}
+                      <span className="text-[#bc2c12] bg-[#bc2c12]/10 px-2.5 py-1 rounded-full flex items-center border border-[#bc2c12]/20">
+                        <i className="fas fa-bell text-[9px] mr-1.5" />
+                        Live
                       </span>
                     )}
                   </div>
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#00f09a] to-emerald-600 flex items-center justify-center text-[#050505] font-bold text-sm shadow-lg shadow-[#00f09a]/20">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#bc2c12] to-[#8a1f0d] flex items-center justify-center text-white font-black text-xs shadow-lg shadow-[#bc2c12]/20 border border-white/10">
                     {getUserInitial()}
                   </div>
                 </button>
 
                 {showDropdown && (
-                  <div className="absolute right-0 mt-3 w-72 rounded-xl border border-white/10 bg-slate-900 shadow-2xl animate-in fade-in zoom-in duration-200 overflow-hidden">
-                    <div className="p-4 border-b border-white/10 bg-white/5">
-                      <div className="flex items-center space-x-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#00f09a] to-emerald-600 flex items-center justify-center text-[#050505] font-bold">
+                  <div className="absolute right-0 mt-3 w-80 rounded-2xl border border-white/10 bg-[#0c0c0e] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in duration-200 overflow-hidden">
+                    <div className="p-5 border-b border-white/5 bg-white/[0.02]">
+                      <div className="flex items-center space-x-4">
+                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#bc2c12] to-[#8a1f0d] flex items-center justify-center text-white font-black text-lg shadow-lg">
                           {getUserInitial()}
                         </div>
                         <div className="overflow-hidden">
-                          <p className="text-sm font-semibold text-white truncate">{userProfile.username || userProfile.name}</p>
-                          <p className="text-xs text-slate-400 truncate">{userProfile.email || 'No notification email'}</p>
+                          <p className="text-sm font-bold text-white truncate">{userProfile.username || userProfile.name}</p>
+                          <p className="text-xs text-slate-500 truncate font-medium">{userProfile.email || 'Alerts disabled'}</p>
                         </div>
                       </div>
                       <Link 
                         to="/profile" 
                         onClick={() => setShowDropdown(false)}
-                        className="mt-4 flex items-center space-x-2 text-xs text-[#00f09a] hover:text-[#00cc82] font-medium transition-colors"
+                        className="mt-4 flex items-center space-x-2 text-[10px] uppercase tracking-widest text-[#bc2c12] hover:text-[#d43216] font-black transition-colors"
                       >
-                        <i className="fas fa-cog" />
-                        <span>Account Settings</span>
+                        <i className="fas fa-sliders-h" />
+                        <span>Account Configuration</span>
                       </Link>
                     </div>
 
-                    <div className="p-4">
-                      <h4 className="text-[10px] uppercase font-bold text-slate-500 mb-3 tracking-widest">Update Alerts</h4>
+                    <div className="p-5">
+                      <h4 className="text-[10px] uppercase font-black text-slate-600 mb-4 tracking-widest">Notification Engine</h4>
                       <form onSubmit={handleUpdateEmail} className="space-y-3">
                         <div className="relative">
-                          <i className="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" />
+                          <i className="fas fa-at absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 text-xs" />
                           <input
                             type="email"
-                            placeholder="New alert email..."
+                            placeholder="Primary alert email..."
                             value={newEmail}
                             onChange={(e) => setNewEmail(e.target.value)}
-                            className="w-full bg-slate-950 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-[#00f09a]/50 transition-colors"
+                            className="w-full bg-black/40 border border-white/5 rounded-xl py-3 pl-10 pr-4 text-xs font-medium focus:outline-none focus:border-[#bc2c12]/50 transition-all placeholder:text-slate-700"
                           />
                         </div>
                         <button
                           type="submit"
                           disabled={emailUpdateLoading || !newEmail}
-                          className="w-full bg-[#00f09a] hover:bg-[#00cc82] disabled:opacity-50 text-[#050505] py-2 rounded-lg text-xs font-bold transition-all hover:shadow-lg hover:shadow-[#00f09a]/20"
+                          className="w-full bg-[#bc2c12] hover:bg-[#d43216] disabled:opacity-50 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-lg hover:shadow-[#bc2c12]/20 active:scale-[0.98]"
                         >
-                          {emailUpdateLoading ? <i className="fas fa-spinner fa-spin" /> : 'Update Email'}
+                          {emailUpdateLoading ? <i className="fas fa-spinner fa-spin" /> : 'Connect Email'}
                         </button>
                       </form>
                     </div>
 
                     {/* Discord Integration */}
-                    <div className="p-4 border-t border-white/10">
-                      <h4 className="text-[10px] uppercase font-bold text-slate-500 mb-3 tracking-widest">Discord Alerts</h4>
+                    <div className="p-5 border-t border-white/5 bg-slate-900/10">
+                      <h4 className="text-[10px] uppercase font-black text-slate-600 mb-4 tracking-widest">Third-Party Channels</h4>
                       {userProfile?.discord_webhook ? (
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                            <span className="text-xs font-semibold text-emerald-400">Discord Connected</span>
+                        <div className="bg-[#5865F2]/5 border border-[#5865F2]/20 rounded-xl p-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <i className="fab fa-discord text-[#5865F2]" />
+                              <span className="text-[10px] font-black text-[#5865F2] uppercase tracking-wider">Discord Active</span>
+                            </div>
+                            <button
+                              onClick={handleRemoveDiscord}
+                              disabled={discordLoading}
+                              className="text-[9px] font-black text-rose-500 uppercase tracking-widest hover:text-rose-400 transition-colors"
+                            >
+                              {discordLoading ? <i className="fas fa-spinner fa-spin" /> : 'Disconnect'}
+                            </button>
                           </div>
-                          <button
-                            onClick={handleRemoveDiscord}
-                            disabled={discordLoading}
-                            className="text-xs text-rose-400 hover:text-rose-300 transition-colors font-medium"
-                          >
-                            {discordLoading ? <i className="fas fa-spinner fa-spin" /> : 'Remove webhook'}
-                          </button>
                         </div>
                       ) : (
-                        <form onSubmit={handleConnectDiscord} className="space-y-2">
+                        <form onSubmit={handleConnectDiscord} className="space-y-3">
                           <div className="relative">
-                            <i className="fab fa-discord absolute left-3 top-1/2 -translate-y-1/2 text-[#5865F2] text-xs" />
+                            <i className="fab fa-discord absolute left-4 top-1/2 -translate-y-1/2 text-[#5865F2] text-xs" />
                             <input
                               type="url"
-                              placeholder="https://discord.com/api/webhooks/..."
+                              placeholder="Discord Webhook URL"
                               value={discordUrl}
                               onChange={(e) => setDiscordUrl(e.target.value)}
-                              className="w-full bg-slate-950 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs focus:outline-none focus:border-[#5865F2]/50 transition-colors"
+                              className="w-full bg-black/40 border border-white/5 rounded-xl py-3 pl-10 pr-4 text-[10px] font-medium focus:outline-none focus:border-[#5865F2]/40 transition-all placeholder:text-slate-700"
                             />
                           </div>
                           <button
                             type="submit"
                             disabled={discordLoading || !discordUrl}
-                            className="w-full py-2 rounded-lg text-xs font-semibold transition-all hover:shadow-lg disabled:opacity-50 text-white"
-                            style={{ backgroundColor: '#5865F2' }}
+                            className="w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border border-[#5865F2]/30 text-[#5865F2] hover:bg-[#5865F2] hover:text-white transition-all disabled:opacity-50"
                           >
-                            {discordLoading ? <i className="fas fa-spinner fa-spin" /> : 'Connect Discord'}
+                            {discordLoading ? <i className="fas fa-spinner fa-spin" /> : 'Link Discord'}
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => setShowDiscordHelp(!showDiscordHelp)}
-                            className="text-[10px] text-slate-500 hover:text-slate-400 transition-colors"
-                          >
-                            {showDiscordHelp ? 'Hide instructions' : 'How to get webhook URL?'}
-                          </button>
-                          {showDiscordHelp && (
-                            <ol className="text-[10px] text-slate-500 space-y-0.5 pl-3 list-decimal">
-                              <li>Open Discord server settings</li>
-                              <li>Integrations → Webhooks</li>
-                              <li>New Webhook → Copy URL</li>
-                              <li>Paste above and click Connect</li>
-                            </ol>
-                          )}
                         </form>
-                      )}
-                      {discordMsg && (
-                        <p className={`text-[10px] mt-2 font-medium ${discordMsg.type === 'success' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                          {discordMsg.text}
-                        </p>
                       )}
                     </div>
 
@@ -318,13 +301,13 @@ export const Navbar = () => {
                     </div>
 
 
-                    <div className="border-t border-white/10 p-2">
+                    <div className="p-2 border-t border-white/5">
                       <button
                         onClick={logout}
-                        className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors text-sm font-medium"
+                        className="w-full flex items-center justify-center space-x-3 py-3 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-rose-500/5 transition-all text-xs font-black uppercase tracking-[0.2em]"
                       >
-                        <i className="fas fa-sign-out-alt w-5" />
-                        <span>Logout</span>
+                        <i className="fas fa-power-off text-[10px]" />
+                        <span>System Exit</span>
                       </button>
                     </div>
                   </div>

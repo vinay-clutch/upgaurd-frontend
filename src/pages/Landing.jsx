@@ -1,188 +1,27 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // ═══════════════════════════════════
-// BEAM ANIMATION (Premium background)
+// TOP GLOW (Matte Cryptix Style)
 // ═══════════════════════════════════
-function createBeam(width, height, layer) {
-  const angle = -35 + Math.random() * 10;
-  return {
-    x: Math.random() * width,
-    y: Math.random() * height,
-    width: 10 + layer * 5,
-    length: height * 2.5,
-    angle,
-    speed: 0.2 + layer * 0.2 + Math.random() * 0.2,
-    opacity: 0.08 + layer * 0.05 + Math.random() * 0.1,
-    pulse: Math.random() * Math.PI * 2,
-    pulseSpeed: 0.01 + Math.random() * 0.015,
-    layer,
-  };
-}
-
-function BeamCanvas() {
-  const canvasRef = useRef(null);
-  const beamsRef = useRef([]);
-  const rafRef = useRef(0);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const LAYERS = 3;
-    const BEAMS_PER_LAYER = window.innerWidth < 768 ? 4 : 8; // Fewer beams on mobile
-
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
-      ctx.scale(dpr, dpr);
-      
-      beamsRef.current = [];
-      const count = w < 768 ? 4 : 8;
-      for (let l = 1; l <= LAYERS; l++) {
-        for (let i = 0; i < count; i++) {
-          beamsRef.current.push(createBeam(w, h, l));
-        }
-      }
-    };
-
-    let resizeTimer;
-    const handleResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(resize, 250);
-    };
-
-    resize();
-    window.addEventListener("resize", handleResize);
-
-    const drawBeam = (beam) => {
-      ctx.save();
-      ctx.translate(beam.x, beam.y);
-      ctx.rotate((beam.angle * Math.PI) / 180);
-      
-      const op = Math.min(1, beam.opacity * (0.8 + Math.sin(beam.pulse) * 0.4));
-      
-      // Use a fixed linear gradient to avoid creating it every frame if possible
-      // or at least simplify the content inside save/restore
-      const grad = ctx.createLinearGradient(0, 0, 0, beam.length);
-      const color = "0, 240, 154"; // Emerald Green
-      grad.addColorStop(0, `rgba(${color}, 0)`);
-      grad.addColorStop(0.2, `rgba(${color}, ${op * 0.3})`);
-      grad.addColorStop(0.5, `rgba(${color}, ${op})`);
-      grad.addColorStop(0.8, `rgba(${color}, ${op * 0.3})`);
-      grad.addColorStop(1, `rgba(${color}, 0)`);
-      
-      ctx.fillStyle = grad;
-      // Removed ctx.filter (blur) as it's very expensive. 
-      // The gradient and narrow width already provide a sleek look.
-      ctx.fillRect(-beam.width / 2, 0, beam.width, beam.length);
-      ctx.restore();
-    };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw background gradient once
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      bgGrad.addColorStop(0, "#05050f");
-      bgGrad.addColorStop(1, "#080818");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const h = window.innerHeight;
-      const w = window.innerWidth;
-
-      beamsRef.current.forEach((beam) => {
-        beam.y -= beam.speed * (beam.layer / LAYERS + 0.5);
-        beam.pulse += beam.pulseSpeed;
-        if (beam.y + beam.length < -50) {
-          beam.y = h + 50;
-          beam.x = Math.random() * w;
-        }
-        drawBeam(beam);
-      });
-
-      rafRef.current = requestAnimationFrame(animate);
-    };
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: "absolute",
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: "none",
-        willChange: "transform"
-      }}
-    />
-  );
-}
-
-// ═══════════════════════════════════
-// MARQUEE (scrolling tech names)
-// ═══════════════════════════════════
-const techs = [
-  "React", "Node.js", "Next.js", "Vue",
-  "Django", "Laravel", "FastAPI", "Spring",
-  "Express", "NestJS", "Nuxt", "Remix"
-];
-
-function Marquee() {
+function TopGlow() {
   return (
     <div style={{
-      overflow: "hidden",
-      borderTop: "1px solid rgba(255,255,255,0.06)",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      padding: "20px 0",
-      background: "rgba(255,255,255,0.01)"
-    }}>
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
-      <div style={{
-        display: "flex",
-        animation: "marquee 20s linear infinite",
-        width: "max-content"
-      }}>
-        {techs.concat(techs).map((t, i) => (
-          <span key={i} style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "0 32px",
-            color: "#64748b",
-            fontSize: "15px",
-            fontWeight: "500",
-            whiteSpace: "nowrap"
-          }}>
-            <span style={{
-              width: "6px", height: "6px",
-              borderRadius: "50%",
-              background: "#00f09a"
-            }}/>
-            {t}
-          </span>
-        ))}
-      </div>
-    </div>
+      position: "absolute",
+      top: "-100px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "120%",
+      maxWidth: "1400px",
+      height: "500px",
+      background: "radial-gradient(ellipse at center, rgba(188, 44, 18, 0.45) 0%, transparent 65%)",
+      filter: "blur(70px)",
+      zIndex: 1,
+      pointerEvents: "none",
+    }} />
   );
 }
+
 
 // ═══════════════════════════════════
 // MAIN LANDING PAGE
@@ -193,21 +32,21 @@ export function Landing() {
   
   useEffect(() => {
     if (token) navigate("/dashboard");
-    document.title = "UpGuard — Prevent Downtime";
+    document.title = "UpGuard — Accelerate Growth";
   }, [token, navigate]);
 
   return (
     <div style={{
-      background: "#08080a",
+      background: "#000000",
       color: "white",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      fontFamily: "'Outfit', 'Inter', sans-serif",
       overflowX: "hidden"
     }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(40px); }
+          from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeIn {
@@ -216,50 +55,36 @@ export function Landing() {
         }
         @keyframes float {
           0%,100% { transform: translateY(0px); }
-          50% { transform: translateY(-12px); }
-        }
-        @keyframes floatR {
-          0%,100% { transform: translateY(-12px); }
-          50% { transform: translateY(0px); }
-        }
-        @keyframes pulse {
-          0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
-          50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
-        }
-        @keyframes shimmer {
-          0% { background-position: -200% center; }
-          100% { background-position: 200% center; }
-        }
-        @keyframes countUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          50% { transform: translateY(-10px); }
         }
 
         .btn-primary {
-          background: #00f09a;
-          color: #050505;
-          border: none;
-          padding: 14px 28px;
-          border-radius: 12px;
+          background: #bc2c12;
+          color: #ffffff;
+          border: 1px solid rgba(255,255,255,0.1);
+          padding: 12px 28px;
+          border-radius: 100px;
           font-size: 15px;
           font-weight: 700;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: all 0.3s;
           text-decoration: none;
-          display: inline-block;
-          box-shadow: 0 10px 20px rgba(0, 240, 154, 0.15);
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          box-shadow: 0 8px 30px rgba(188, 44, 18, 0.2);
         }
         .btn-primary:hover {
-          background: #00cc82;
+          background: #d43216;
           transform: translateY(-2px);
-          box-shadow: 0 15px 30px rgba(0, 240, 154, 0.3);
+          box-shadow: 0 12px 40px rgba(188, 44, 18, 0.35);
         }
         .btn-ghost {
-          background: rgba(255,255,255,0.03);
+          background: rgba(255,255,255,0.02);
           color: white;
-          border: 1px solid rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.1);
           padding: 14px 28px;
-          border-radius: 12px;
+          border-radius: 100px;
           font-size: 15px;
           font-weight: 600;
           cursor: pointer;
@@ -272,119 +97,86 @@ export function Landing() {
           border-color: rgba(255,255,255,0.2);
           transform: translateY(-2px);
         }
-        .feature-card {
-          background: rgba(255,255,255,0.01);
-          border: 1px solid rgba(255,255,255,0.05);
-          border-radius: 24px;
-          padding: 32px;
-          transition: all 0.3s;
-        }
-        .feature-card:hover {
-          border-color: rgba(0, 240, 154, 0.3);
-          background: rgba(0, 240, 154, 0.02);
-          transform: translateY(-6px);
-          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
-        }
-        .check-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          color: #94a3b8;
-          font-size: 15px;
-          margin-bottom: 12px;
-        }
-        .check-item::before {
-          content: "✓";
-          color: #00f09a;
-          font-weight: 700;
-          font-size: 16px;
-          flex-shrink: 0;
-        }
-        .section-label {
-          display: inline-block;
-          background: rgba(0, 240, 154, 0.1);
-          border: 1px solid rgba(0, 240, 154, 0.2);
-          color: #00f09a;
-          padding: 6px 16px;
-          border-radius: 100px;
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-          margin-bottom: 20px;
-        }
         .mockup-card {
-          background: #0d0d20;
-          border: 1px solid rgba(255,255,255,0.08);
+          background: #080808;
+          border: 1px solid rgba(255,255,255,0.04);
           border-radius: 20px;
           overflow: hidden;
-          box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+          box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+          position: relative;
         }
-        .site-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 12px 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.04);
-          font-size: 13px;
-        }
-        .badge {
-          padding: 3px 10px;
-          border-radius: 6px;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-        }
-        .responsive-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 40px;
-          align-items: center;
-        }
-        @media (min-width: 992px) {
-          .responsive-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-          }
+        .mockup-line-glow {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 50%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, #bc2c12, transparent);
+          box-shadow: 0 0 15px 1px #bc2c12;
+          z-index: 10;
         }
       `}</style>
 
       {/* ── NAVBAR ── */}
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0,
-        zIndex: 1000,
-        display: "flex", alignItems: "center",
-        justifyContent: "space-between",
-        padding: "14px 24px",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        backdropFilter: "blur(20px)",
-        background: "rgba(5,5,15,0.85)",
-        maxWidth: "100vw"
-      }} className="md:px-20 px-6">
-        <div style={{
+      <div style={{
+        marginTop: "32px",
+        display: "flex",
+        justifyContent: "center",
+      }}>
+        <nav style={{
+          zIndex: 1000,
           display: "flex", alignItems: "center",
-          gap: "10px", fontWeight: "800",
-          fontSize: "20px", color: "white"
+          gap: "40px",
+          padding: "10px 10px 10px 24px",
+          background: "rgba(0,0,0,0.6)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "100px",
+          maxWidth: "fit-content",
         }}>
-          🛡️ UpGuard
-        </div>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <button
-            className="btn-ghost"
-            onClick={() => navigate("/login")}
-            style={{ padding: "10px 22px", fontSize: "14px" }}
-          >
-            Sign in
-          </button>
+          <div style={{
+            display: "flex", alignItems: "center",
+            gap: "8px", fontWeight: "900",
+            fontSize: "18px", color: "white"
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L4.5 5.5V10C4.5 14.7 7.7 19.1 12 21.5C16.3 19.1 19.5 14.7 19.5 10V5.5L12 2ZM17.5 10C17.5 13.8 15.2 17.3 12 19.4C8.8 17.3 6.5 13.8 6.5 10V6.6L12 4.1L17.5 6.6V10Z" fill="#bc2c12"/>
+            </svg>
+            UpGuard
+          </div>
+
+          <div style={{ display: "none" }} className="md:flex items-center gap-10">
+            {["About", "Features", "Pricing", "Resources", "Contact"].map((link, i) => (
+              <a key={i} href="#" style={{
+                color: "white",
+                fontSize: "13px",
+                fontWeight: "600",
+                textDecoration: "none",
+                opacity: 0.8,
+                padding: "0 10px"
+              }}>
+                {link}
+              </a>
+            ))}
+          </div>
+
           <button
             className="btn-primary"
             onClick={() => navigate("/register")}
-            style={{ padding: "10px 22px", fontSize: "14px" }}
+            style={{ 
+              padding: "10px 24px", 
+              fontSize: "13px",
+              borderRadius: "100px",
+              background: "#bc2c12",
+              border: "none",
+              boxShadow: "none"
+            }}
           >
-            Get started
+            Get Started
           </button>
-        </div>
-      </nav>
+        </nav>
+      </div>
 
       {/* ── HERO ── */}
       <section style={{
@@ -394,31 +186,10 @@ export function Landing() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        overflow: "hidden",
-        paddingTop: "80px"
+        paddingTop: "40px",
+        paddingBottom: "80px"
       }}>
-        <BeamCanvas />
-
-        {/* Grid overlay */}
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 1,
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
-          `,
-          backgroundSize: "60px 60px",
-          pointerEvents: "none"
-        }}/>
-
-        {/* Center Emerald glow */}
-        <div style={{
-          position: "absolute",
-          top: "20%", left: "50%",
-          transform: "translateX(-50%)",
-          width: "700px", height: "700px",
-          background: "radial-gradient(circle, rgba(0, 240, 154,0.12) 0%, transparent 65%)",
-          pointerEvents: "none", zIndex: 1
-        }}/>
+        <TopGlow />
 
         {/* Hero content */}
         <div style={{
@@ -426,843 +197,218 @@ export function Landing() {
           textAlign: "center",
           padding: "0 20px",
           maxWidth: "900px",
-          animation: "fadeUp 1s ease forwards"
+          animation: "fadeUp 0.8s ease-out forwards"
         }}>
-          {/* Badge */}
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center", gap: "8px",
-            background: "rgba(0, 240, 154, 0.05)",
-            border: "1px solid rgba(0, 240, 154, 0.2)",
-            borderRadius: "100px",
-            padding: "8px 18px",
-            marginBottom: "36px",
-            fontSize: "13px", color: "#00f09a"
-          }}>
-            <span style={{
-              width: "7px", height: "7px",
-              background: "#00f09a",
-              borderRadius: "50%",
-              display: "inline-block"
-            }}/>
-            Now monitoring 1,000+ websites worldwide
-          </div>
-
-          {/* Heading */}
           <h1 style={{
-            fontSize: "clamp(48px, 9vw, 104px)",
-            fontWeight: 900,
-            lineHeight: 1.1,
+            fontSize: "clamp(48px, 6.5vw, 82px)",
+            fontWeight: 800,
+            lineHeight: 1,
             letterSpacing: "-3px",
             marginBottom: "32px",
             color: "white"
           }}>
-            Prevent downtime.<br/>
-            <span style={{
-              background: "linear-gradient(135deg, #00f09a 0%, #06b6d4 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              display: "inline-block",
-              marginTop: "8px"
-            }}>
-              Monitor everything.
-            </span>
+            Accelerate Business Growth<br/>
+            Through Smart AI Conversations.
           </h1>
 
-          {/* Subtitle */}
           <p style={{
             fontSize: "20px",
             color: "#94a3b8",
-            maxWidth: "640px",
+            maxWidth: "650px",
             margin: "0 auto 48px",
             lineHeight: 1.6,
             fontWeight: "400"
           }}>
-            The all-in-one platform that watches your websites,
-            tracks analytics, and catches errors —
-            before your users notice.
+            Deliver instant, personalized conversations with our<br/>
+            cutting-edge, AI-driven chatbot solutions.
           </p>
 
-          {/* Buttons */}
           <div style={{
-            display: "flex", gap: "14px",
-            justifyContent: "center", marginBottom: "56px",
-            flexWrap: "wrap"
+            display: "flex",
+            gap: "16px",
+            justifyContent: "center",
+            marginBottom: "64px"
           }}>
             <button
               className="btn-primary"
               onClick={() => navigate("/register")}
+              style={{ padding: "16px 40px", fontSize: "16px" }}
             >
-              Start monitoring free
+              Get Started
             </button>
             <button
               className="btn-ghost"
-              onClick={() => navigate("/login")}
+              style={{ padding: "16px 40px", fontSize: "16px", border: "1px solid rgba(255,255,255,0.1)" }}
             >
-              View dashboard →
+              Learn More
             </button>
-          </div>
-
-          {/* Integration badges */}
-          <div style={{
-            display: "flex", gap: "10px",
-            justifyContent: "center", flexWrap: "wrap"
-          }}>
-            {["📧 Email","💬 Discord","💼 Slack",
-              "🌍 Multi-region","🔒 SSL"].map((item, i) => (
-              <span key={i} style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "100px",
-                padding: "6px 16px",
-                fontSize: "13px", color: "#94a3b8"
-              }}>{item}</span>
-            ))}
           </div>
         </div>
 
         {/* Dashboard Mockup */}
         <div style={{
           position: "relative",
-          marginTop: "80px",
-          width: "100%",
-          maxWidth: "900px",
-          padding: "0 20px",
+          width: "90%",
+          maxWidth: "1100px",
           zIndex: 10,
           animation: "float 6s ease-in-out infinite"
         }}>
-          {/* Glow behind mockup */}
-          <div style={{
-            position: "absolute",
-            inset: "-2px",
-            background: "linear-gradient(135deg,#00f09a,#06b6d4,#00f09a)",
-            borderRadius: "22px",
-            filter: "blur(25px)",
-            opacity: 0.2,
-            zIndex: -1
-          }}/>
-
-          {/* Browser window */}
           <div className="mockup-card">
-            {/* Browser chrome */}
-            <div style={{
-              background: "#0a0a1a",
-              padding: "12px 16px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              borderBottom: "1px solid rgba(255,255,255,0.05)"
-            }}>
-              <div style={{ display:"flex", gap:"6px" }}>
-                {["#ff5f57","#febc2e","#28c840"].map((c,i) => (
-                  <div key={i} style={{
-                    width:"11px", height:"11px",
-                    borderRadius:"50%", background: c
-                  }}/>
-                ))}
-              </div>
-              <div style={{
-                flex: 1,
-                background: "rgba(255,255,255,0.05)",
-                borderRadius: "6px",
-                padding: "4px 14px",
-                fontSize: "12px",
-                color: "#94a3b8",
-                textAlign: "center"
-              }}>
-                app.upguard.io/dashboard
-              </div>
-            </div>
-
-            {/* Dashboard body */}
-            <div style={{ display:"flex", height:"360px" }} className="flex-col md:flex-row">
-              {/* Sidebar - hidden on mobile mockup for space */}
-              <div style={{
-                width: "180px",
-                background: "#080818",
-                borderRight: "1px solid rgba(255,255,255,0.05)",
-                padding: "20px 14px",
-                flexShrink: 0
-              }} className="hidden md:block">
-                <div style={{
-                  color:"#00f09a", fontWeight:"800",
-                  fontSize:"14px", marginBottom:"24px",
-                  display:"flex", alignItems:"center", gap:"6px"
-                }}>
-                  🛡️ UpGuard
+            <div className="mockup-line-glow" />
+            <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", height: "480px" }}>
+              {/* Sidebar */}
+              <div style={{ borderRight: "1px solid rgba(255,255,255,0.05)", padding: "32px 20px", background: "rgba(0,0,0,0.2)" }}>
+                <div style={{ color: "#bc2c12", fontWeight: "900", fontSize: "15px", marginBottom: "40px", display: "flex", alignItems: "center", gap: "8px" }}>
+                   <div style={{ width: "12px", height: "12px", borderRadius: "3px", background: "#bc2c12" }} />
+                   UpGuard
                 </div>
-                {["Dashboard","Websites","Analytics",
-                  "Incidents","Settings"].map((item, i) => (
+                {["Dashboard", "AI Models", "Knowledge Base", "Conversations", "Settings"].map((item, i) => (
                   <div key={i} style={{
-                    padding: "9px 12px",
-                    borderRadius: "8px",
+                    padding: "10px 14px", borderRadius: "10px", fontSize: "13px", fontWeight: "600",
                     color: i === 0 ? "white" : "#64748b",
-                    background: i === 0
-                      ? "rgba(0, 240, 154, 0.15)"
-                      : "transparent",
-                    fontSize: "13px",
-                    marginBottom: "2px",
-                    fontWeight: i === 0 ? "600" : "400"
+                    background: i === 0 ? "rgba(188, 44, 18, 0.15)" : "transparent",
+                    marginBottom: "8px"
                   }}>{item}</div>
                 ))}
               </div>
-
-              {/* Main area */}
-              <div style={{ flex:1, padding:"20px" }}>
-                {/* Stats row */}
-                <div style={{
-                  display:"grid",
-                  gridTemplateColumns:"repeat(3,1fr)",
-                  gap:"10px",
-                  marginBottom:"16px"
-                }}>
+              {/* Main Content */}
+              <div style={{ padding: "40px", background: "#050505" }}>
+                <div style={{ display: "flex", gap: "24px", marginBottom: "40px" }}>
                   {[
-                    {l:"Total Sites", v:"12", c:"#00f09a"},
-                    {l:"Online", v:"11", c:"#22c55e"},
-                    {l:"Avg Uptime", v:"99.9%", c:"#06b6d4"}
-                  ].map((s,i) => (
-                    <div key={i} style={{
-                      background:"rgba(255,255,255,0.03)",
-                      border:"1px solid rgba(255,255,255,0.06)",
-                      borderRadius:"10px",
-                      padding:"12px 14px"
-                    }}>
-                      <div style={{
-                        color:"#64748b", fontSize:"10px",
-                        marginBottom:"6px",
-                        textTransform:"uppercase",
-                        letterSpacing:"0.5px"
-                      }}>{s.l}</div>
-                      <div style={{
-                        color: s.c,
-                        fontSize:"22px",
-                        fontWeight:"800"
-                      }}>{s.v}</div>
+                    { l: "ACTIVE USERS", v: "1,284", c: "white" },
+                    { l: "CONVERSATIONS", v: "42.5k", c: "#bc2c12" },
+                    { l: "CSAT SCORE", v: "98%", c: "#38bdf8" }
+                  ].map((stat, i) => (
+                    <div key={i} style={{ flex: 1, padding: "20px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "16px" }}>
+                      <div style={{ fontSize: "10px", fontWeight: "900", color: "#475569", letterSpacing: "1px", marginBottom: "8px" }}>{stat.l}</div>
+                      <div style={{ fontSize: "24px", fontWeight: "800", color: stat.c }}>{stat.v}</div>
                     </div>
                   ))}
                 </div>
-
-                {/* Chart */}
-                <div style={{
-                  background:"rgba(255,255,255,0.02)",
-                  border:"1px solid rgba(255,255,255,0.05)",
-                  borderRadius:"12px",
-                  padding:"16px",
-                  height:"220px",
-                  position:"relative"
-                }}>
-                  <div style={{
-                    color:"#334155", fontSize:"11px",
-                    marginBottom:"10px",
-                    textTransform:"uppercase",
-                    letterSpacing:"0.5px"
-                  }}>
-                    Response Time (ms)
-                  </div>
-                  <svg width="100%" height="170"
-                    viewBox="0 0 500 170"
-                    preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="g1"
-                        x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%"
-                          stopColor="#00f09a"
-                          stopOpacity="0.4"/>
-                        <stop offset="100%"
-                          stopColor="#00f09a"
-                          stopOpacity="0"/>
-                      </linearGradient>
-                    </defs>
-                    <path
-                      d="M0,130 C40,110 70,70 120,80
-                         S190,100 240,55
-                         S340,20 400,45
-                         S470,65 500,35
-                         L500,170 L0,170 Z"
-                      fill="url(#g1)"/>
-                    <path
-                      d="M0,130 C40,110 70,70 120,80
-                         S190,100 240,55
-                         S340,20 400,45
-                         S470,65 500,35"
-                      fill="none"
-                      stroke="#00f09a"
-                      strokeWidth="2.5"/>
-                    <circle r="5" fill="#06b6d4">
-                      <animateMotion dur="4s"
-                        repeatCount="indefinite"
-                        path="M0,130 C40,110 70,70 120,80
-                               S190,100 240,55
-                               S340,20 400,45
-                               S470,65 500,35"/>
-                    </circle>
-                  </svg>
+                {/* Visual Chart Placeholder */}
+                <div style={{ height: "200px", position: "relative" }}>
+                   <div style={{ fontSize: "11px", fontWeight: "800", color: "#475569", marginBottom: "20px" }}>CONVERSATION VOLUMES</div>
+                   <svg width="100%" height="100%" viewBox="0 0 600 150" preserveAspectRatio="none">
+                      <path d="M0 120 Q 50 110, 100 130 T 200 90 T 300 110 T 400 60 T 500 80 T 600 30" fill="none" stroke="#bc2c12" strokeWidth="3" strokeLinecap="round" />
+                      <path d="M0 120 Q 50 110, 100 130 T 200 90 T 300 110 T 400 60 T 500 80 T 600 30 L 600 150 L 0 150 Z" fill="rgba(188, 44, 18, 0.1)" />
+                   </svg>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Floating left card */}
-          <div style={{
-            position:"absolute",
-            left:"-20px", bottom:"80px",
-            background:"rgba(13,13,32,0.95)",
-            backdropFilter:"blur(20px)",
-            border:"1px solid rgba(255,255,255,0.1)",
-            borderRadius:"16px",
-            padding:"16px 20px",
-            width:"170px",
-            animation:"float 4s ease-in-out infinite",
-            zIndex:20
-          }}>
-            <div style={{
-              display:"flex", alignItems:"center",
-              gap:"8px", marginBottom:"8px"
-            }}>
-              <div style={{
-                width:"8px", height:"8px",
-                background:"#22c55e",
-                borderRadius:"50%",
-                animation:"pulse 2s infinite"
-              }}/>
-              <span style={{
-                color:"#64748b", fontSize:"11px",
-                fontWeight:"600",
-                textTransform:"uppercase",
-                letterSpacing:"1px"
-              }}>Live Monitor</span>
-            </div>
-            <div style={{
-              color:"white", fontWeight:"800",
-              fontSize:"18px", marginBottom:"4px"
-            }}>12 Sites UP</div>
-            <div style={{
-              color:"#22c55e", fontSize:"12px"
-            }}>↑ All systems green</div>
-          </div>
-
-          {/* Floating right card */}
-          <div style={{
-            position:"absolute",
-            right:"-20px", top:"80px",
-            background:"rgba(13,13,32,0.95)",
-            backdropFilter:"blur(20px)",
-            border:"1px solid rgba(255,255,255,0.1)",
-            borderRadius:"16px",
-            padding:"16px 20px",
-            width:"180px",
-            animation:"floatR 5s ease-in-out infinite",
-            zIndex:20
-          }}>
-            <div style={{
-              color:"#64748b", fontSize:"11px",
-              marginBottom:"8px",
-              textTransform:"uppercase",
-              letterSpacing:"1px",
-              fontWeight:"600"
-            }}>🔔 Alert dispatched</div>
-            <div style={{
-              color:"white", fontSize:"14px",
-              fontWeight:"700", marginBottom:"4px"
-            }}>mysite.com recovered</div>
-            <div style={{
-              color:"#00f09a", fontSize:"12px"
-            }}>2 seconds ago</div>
-          </div>
         </div>
-
-        {/* Bottom fade */}
-        <div style={{
-          position:"absolute",
-          bottom:0, left:0, right:0,
-          height:"200px",
-          background:"linear-gradient(transparent,#05050f)",
-          zIndex:5, pointerEvents:"none"
-        }}/>
       </section>
 
-      {/* ── TRUSTED BY MARQUEE ── */}
-      <div style={{ padding:"16px 0" }}>
-        <p style={{
-          textAlign:"center",
-          color:"#64748b",
-          fontSize:"12px",
-          fontWeight:"700",
-          letterSpacing:"2px",
-          textTransform:"uppercase",
-          marginBottom:"16px"
-        }}>TRUSTED BY DEVELOPERS BUILDING WITH:</p>
-        <Marquee />
+      {/* ── OUR CLIENTS ── */}
+      <div style={{ padding: "80px 0 40px", borderTop: "1px solid rgba(255,255,255,0.03)" }}>
+        <p style={{ textAlign: "center", color: "#64748b", fontSize: "12px", fontWeight: "800", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "48px", opacity: 0.7 }}>Our Clients</p>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "60px", flexWrap: "wrap", opacity: 0.5 }}>
+          <div style={{ fontSize: "24px", fontWeight: "900", color: "#64748b" }}>IPSUM</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ width: "24px", height: "24px", background: "#64748b", transform: "skew(-15deg)" }} />
+            <span style={{ fontWeight: "800", color: "#64748b", fontSize: "18px" }}>Lorem Ipsum</span>
+          </div>
+          <div style={{ fontWeight: "900", color: "#64748b", fontSize: "20px" }}>LOREM IPSUM</div>
+          <div style={{ fontSize: "24px", color: "#64748b", fontWeight: "700" }}>✽ flora</div>
+          <div style={{ fontSize: "26px", fontWeight: "900", color: "#64748b" }}>///</div>
+        </div>
       </div>
 
-      {/* ── FEATURE 1 - Uptime Monitoring ── */}
-      <section className="responsive-grid md:py-24" style={{
-        padding: "80px 24px",
-        maxWidth: "1200px",
-        margin: "0 auto",
-      }}>
-        <div>
-          <div className="section-label">UPTIME MONITORING</div>
-          <h2 style={{
-            fontSize:"clamp(36px,4vw,52px)",
-            fontWeight:900,
-            lineHeight:1.1,
-            letterSpacing:"-2px",
-            marginBottom:"20px",
-            color:"white"
-          }}>
-            Know before<br/>your users do.
-          </h2>
-          <p style={{
-            color:"#94a3b8", fontSize:"18px",
-            lineHeight:1.7, marginBottom:"32px"
-          }}>
-            UpGuard monitors your websites every 60 seconds
-            from multiple regions. Get notified the second
-            your global status changes.
-          </p>
-          <div className="check-item">60s check intervals</div>
-          <div className="check-item">5 Global regions</div>
-          <div className="check-item">Response time analysis</div>
-          <div className="check-item">Downtime diagnostics</div>
-          <div style={{ cursor: "pointer", color:"#00f09a", fontSize:"15px", fontWeight:"600", marginTop:"12px" }}>Learn more →</div>
-        </div>
+      {/* ── PRODUCTS SECTION ── */}
+      <section style={{ padding: "120px 24px", maxWidth: "1200px", margin: "0 auto", textAlign: "center" }}>
+        <h2 style={{ fontSize: "clamp(36px, 5vw, 48px)", color: "#bc2c12", fontWeight: "900", marginBottom: "20px" }}>Try One Of Our AI Chatbots Below</h2>
+        <p style={{ color: "#94a3b8", fontSize: "18px", maxWidth: "700px", margin: "0 auto 80px", lineHeight: 1.6 }}>
+          Explore AI-powered assistants tailored for various industries and platforms. 
+          Pick one that fits your needs and experience seamless automation.
+        </p>
 
-        {/* Site list mockup */}
-        <div className="mockup-card" style={{ padding:"8px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "32px" }}>
           {[
-            {url:"google.com", status:"UP",
-              statusColor:"#22c55e",
-              dotColor:"#22c55e",
-              ms:"24ms", uptime:"100%"},
-            {url:"shopify.com", status:"UP",
-              statusColor:"#22c55e",
-              dotColor:"#22c55e",
-              ms:"142ms", uptime:"99.9%"},
-            {url:"api.production.co", status:"SLOW",
-              statusColor:"#f59e0b",
-              dotColor:"#f59e0b",
-              ms:"1200ms", uptime:"99.2%"},
-            {url:"legacy.app.io", status:"DOWN",
-              statusColor:"#ef4444",
-              dotColor:"#ef4444",
-              ms:"—", uptime:"96.5%"}
-          ].map((site, i) => (
-            <div key={i} className="site-row">
-              <div style={{
-                display:"flex",
-                alignItems:"center", gap:"10px"
-              }}>
-                <div style={{
-                  width:"8px", height:"8px",
-                  borderRadius:"50%",
-                  background: site.dotColor,
-                  flexShrink:0
-                }}/>
-                <span style={{
-                  color:"#94a3b8", fontSize:"13px"
-                }}>{site.url}</span>
-              </div>
-              <div style={{
-                display:"flex",
-                alignItems:"center", gap:"16px"
-              }}>
-                <span style={{
-                  color: site.statusColor,
-                  fontWeight:"700", fontSize:"12px"
-                }}>{site.status}</span>
-                <span style={{
-                  color:"#64748b", fontSize:"12px",
-                  minWidth:"55px", textAlign:"right"
-                }}>{site.ms}</span>
-                <span style={{
-                  color:"#64748b", fontSize:"12px",
-                  minWidth:"42px", textAlign:"right"
-                }}>{site.uptime}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── FEATURE 2 - Analytics ── */}
-      <section className="responsive-grid md:py-24" style={{
-        padding: "80px 24px",
-        maxWidth: "1200px",
-        margin: "0 auto",
-      }}>
-        {/* Analytics mockup */}
-        <div className="mockup-card" style={{ padding:"24px" }}>
-          <div style={{
-            color:"#64748b", fontSize:"11px",
-            textTransform:"uppercase",
-            letterSpacing:"1px",
-            marginBottom:"20px"
-          }}>Sessions over time</div>
-          
-          {/* Bar chart */}
-          <div style={{
-            display:"flex",
-            alignItems:"flex-end",
-            gap:"8px", height:"120px",
-            marginBottom:"20px"
-          }}>
-            {[40,65,45,80,55,90,70,85,60,95,75,100]
-              .map((h, i) => (
-              <div key={i} style={{
-                flex:1,
-                height:`${h}%`,
-                background:`linear-gradient(
-                  to top,
-                  #00f09a,
-                  #06b6d4
-                )`,
-                borderRadius:"4px 4px 0 0",
-                opacity: 0.7 + i * 0.025
-              }}/>
-            ))}
-          </div>
-
-          <div style={{
-            display:"flex",
-            justifyContent:"space-between",
-            alignItems:"center",
-            padding:"12px 0",
-            borderTop:"1px solid rgba(255,255,255,0.06)"
-          }}>
-            <div>
-              <div style={{
-                color:"#64748b", fontSize:"11px",
-                marginBottom:"4px"
-              }}>Sessions today</div>
-              <div style={{
-                color:"white", fontSize:"20px",
-                fontWeight:"800"
-              }}>1,482</div>
-            </div>
-            <div style={{
-              color:"#22c55e", fontSize:"13px",
-              fontWeight:"600"
-            }}>↑ 12.5%</div>
-          </div>
-        </div>
-
-        <div>
-          <div className="section-label">BUILT-IN ANALYTICS</div>
-          <h2 style={{
-            fontSize:"clamp(36px,4vw,52px)",
-            fontWeight:900,
-            lineHeight:1.1,
-            letterSpacing:"-2px",
-            marginBottom:"20px",
-            color:"white"
-          }}>
-            Metrics that matter.<br/>
-            <span style={{
-              background:"linear-gradient(135deg,#00f09a,#06b6d4)",
-              WebkitBackgroundClip:"text",
-              WebkitTextFillColor:"transparent",
-              backgroundClip:"text"
-            }}>Privacy focused.</span>
-          </h2>
-          <p style={{
-            color:"#94a3b8", fontSize:"18px",
-            lineHeight:1.7, marginBottom:"32px"
-          }}>
-            Ditch Google Analytics. Track page views, sessions
-            and traffic sources without cookies. 100% GDPR
-            compliant and blazing fast.
-          </p>
-          <div className="check-item">Zero-cookie tracking</div>
-          <div className="check-item">Traffic origin analysis</div>
-          <div className="check-item">Device & Browser stats</div>
-          <div className="check-item">Performance watermarks</div>
-        </div>
-      </section>
-
-      {/* ── FEATURE 3 - Alerts ── */}
-      <section className="responsive-grid md:py-24" style={{
-        padding: "80px 24px",
-        maxWidth: "1200px",
-        margin: "0 auto",
-      }}>
-        <div>
-          <div className="section-label">INSTANT ALERTS</div>
-          <h2 style={{
-            fontSize:"clamp(36px,4vw,52px)",
-            fontWeight:900,
-            lineHeight:1.1,
-            letterSpacing:"-2px",
-            marginBottom:"20px",
-            color:"white"
-          }}>
-            Resolve downtime<br/>faster than ever.
-          </h2>
-          <p style={{
-            color:"#94a3b8", fontSize:"18px",
-            lineHeight:1.7, marginBottom:"32px"
-          }}>
-            Get notified instantly via Email, Discord or Slack.
-            Smart alerts prevent spam with intelligent
-            cooldowns and error diagnosis.
-          </p>
-          <div className="check-item">
-            Email alerts with error diagnosis
-          </div>
-          <div className="check-item">
-            Discord webhook integration
-          </div>
-          <div className="check-item">
-            Slack workspace alerts
-          </div>
-          <div className="check-item">
-            Slow response warnings
-          </div>
-        </div>
-
-        {/* Alert cards mockup */}
-        <div style={{
-          display:"flex",
-          flexDirection:"column", gap:"12px"
-        }}>
-          {[
-            {
-              icon:"💬", platform:"Discord",
-              color:"#5865f2",
-              title:"🔴 mysite.com is DOWN",
-              msg:"Error: ECONNREFUSED • 2 min ago",
-              bg:"rgba(88,101,242,0.08)"
-            },
-            {
-              icon:"📧", platform:"Email",
-              color:"#0ea5e9",
-              title:"⚠️ Slow Response Alert",
-              msg:"api.mysite.com • 3200ms • 5 min ago",
-              bg:"rgba(14,165,233,0.08)"
-            },
-            {
-              icon:"💼", platform:"Slack",
-              color:"#22c55e",
-              title:"✅ mysite.com recovered!",
-              msg:"Downtime: 3m 42s • Just now",
-              bg:"rgba(34,197,94,0.08)"
-            }
-          ].map((alert, i) => (
-            <div key={i} style={{
-              background: alert.bg,
-              border:`1px solid ${alert.color}22`,
-              borderLeft:`3px solid ${alert.color}`,
-              borderRadius:"12px",
-              padding:"16px 20px"
+            { platform: "TikTok", icon: "fab fa-tiktok", desc: "Generate content ideas, manage comments, and respond instantly." },
+            { platform: "Telegram", icon: "fab fa-telegram", desc: "Handle support queries and automate sales funnels effortlessly." },
+            { platform: "X (Twitter)", icon: "fab fa-twitter", desc: "Drive engagement and capture leads 24/7 on X platform." }
+          ].map((app, i) => (
+            <div key={i} className="mockup-card" style={{
+              padding: "54px 40px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "24px",
+              background: "#050505", border: "1px solid rgba(255,255,255,0.05)", transition: "all 0.3s ease"
             }}>
-              <div style={{
-                display:"flex",
-                alignItems:"center",
-                gap:"8px",
-                marginBottom:"6px"
-              }}>
-                <span style={{ fontSize:"16px" }}>
-                  {alert.icon}
-                </span>
-                <span style={{
-                  color: alert.color,
-                  fontSize:"12px",
-                  fontWeight:"700",
-                  textTransform:"uppercase",
-                  letterSpacing:"1px"
-                }}>{alert.platform}</span>
+              <div style={{ width: "72px", height: "72px", borderRadius: "20px", background: "rgba(188, 44, 18, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <i className={app.icon} style={{ fontSize: "32px", color: "#bc2c12" }} />
               </div>
-              <div style={{
-                color:"white", fontSize:"14px",
-                fontWeight:"600", marginBottom:"4px"
-              }}>{alert.title}</div>
-              <div style={{
-                color:"#64748b", fontSize:"13px"
-              }}>{alert.msg}</div>
+              <div>
+                 <div style={{ fontSize: "24px", fontWeight: "900", color: "white", marginBottom: "8px" }}>{app.platform}</div>
+                 <div style={{ fontSize: "12px", fontWeight: "900", color: "#bc2c12", textTransform: "uppercase", letterSpacing: "2px" }}>SOCIAL AI</div>
+              </div>
+              <p style={{ color: "#64748b", fontSize: "15px", lineHeight: "1.6", minHeight: "80px" }}>{app.desc}</p>
+              <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "#bc2c12", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 10px 25px rgba(188, 44, 18, 0.4)" }}>
+                 <i className="fas fa-arrow-right" style={{ color: "white", fontSize: "18px" }} />
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── STATS ── */}
-      <section style={{
-        background:"rgba(0, 240, 154, 0.03)",
-        borderTop:"1px solid rgba(0, 240, 154, 0.08)",
-        borderBottom:"1px solid rgba(0, 240, 154, 0.08)",
-        padding:"80px 60px"
-      }}>
-        <div style={{
-          maxWidth:"1000px", margin:"0 auto",
-          display:"grid",
-          gridTemplateColumns:"repeat(4,1fr)",
-          gap:"40px", textAlign:"center"
-        }}>
+      {/* ── STATS SECTION ── */}
+      <section style={{ padding: "120px 24px", background: "#000000", borderTop: "1px solid rgba(255,255,255,0.03)", textAlign: "center" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "80px" }}>
           {[
-            {n:"99.9%", l:"UPTIME RELIABILITY"},
-            {n:"<60s", l:"DETECTION SPEED"},
-            {n:"5", l:"GLOBAL REGIONS"},
-            {n:"3+", l:"ALERT CHANNELS"}
-          ].map((s,i) => (
+            { n: "99.9%", l: "UPTIME ACCURACY" },
+            { n: "24/7", l: "SMART RESPONSE" },
+            { n: "10M+", l: "CHATS ANALYZED" },
+            { n: "500+", l: "TRUSTED CLIENTS" }
+          ].map((s, i) => (
             <div key={i}>
-              <div style={{
-                fontSize:"clamp(40px,5vw,64px)",
-                fontWeight:900,
-                letterSpacing:"-2px",
-                background:"linear-gradient(135deg,#fff,#00f09a)",
-                WebkitBackgroundClip:"text",
-                WebkitTextFillColor:"transparent",
-                backgroundClip:"text",
-                marginBottom:"8px"
-              }}>{s.n}</div>
-              <div style={{
-                color:"#64748b",
-                fontSize:"11px",
-                fontWeight:"800",
-                letterSpacing:"2px",
-                textTransform:"uppercase"
-              }}>{s.l}</div>
+              <div style={{ fontSize: "clamp(52px, 7vw, 84px)", fontWeight: 950, letterSpacing: "-4px", color: "white", marginBottom: "8px" }}>{s.n}</div>
+              <div style={{ color: "#bc2c12", fontSize: "12px", fontWeight: "900", letterSpacing: "4px", textTransform: "uppercase" }}>{s.l}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── FINAL CTA ── */}
-      <section style={{
-        padding:"160px 20px",
-        textAlign:"center",
-        background:"radial-gradient(ellipse at center, rgba(0, 240, 154, 0.12) 0%, transparent 65%)"
-      }}>
-        <h2 style={{
-          fontSize:"clamp(40px,6vw,72px)",
-          fontWeight:900,
-          letterSpacing:"-3px",
-          marginBottom:"20px",
-          color:"white"
-        }}>
-          Downtime ends today.
-        </h2>
-        <p style={{
-          color:"#94a3b8",
-          fontSize:"19px",
-          maxWidth:"500px",
-          margin:"0 auto 48px",
-          lineHeight:1.7
-        }}>
-          Join 500+ developers who trust UpGuard to keep
-          their services running. No credit card required.
+      <section style={{ padding: "200px 24px", textAlign: "center", background: "radial-gradient(circle at center, rgba(188, 44, 18, 0.15) 0%, transparent 70%)" }}>
+        <h2 style={{ fontSize: "clamp(48px, 8vw, 96px)", fontWeight: 900, letterSpacing: "-4px", lineHeight: 0.9, marginBottom: "40px", color: "white" }}>Ready to Accelerate?</h2>
+        <p style={{ color: "#94a3b8", fontSize: "22px", maxWidth: "650px", margin: "0 auto 56px", lineHeight: 1.6 }}>
+          Transform your business communication with our advanced AI solutions. Start your journey towards exponential growth today.
         </p>
-        <button
-          className="btn-primary"
-          onClick={() => navigate("/register")}
-          style={{
-            fontSize:"17px",
-            padding:"16px 36px"
-          }}
-        >
-          Get started for free
-        </button>
-        <div style={{
-          color:"#64748b",
-          fontSize:"13px",
-          marginTop:"16px"
-        }}>
-          Setup in less than 2 minutes
+        <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap" }}>
+           <button className="btn-primary" onClick={() => navigate("/register")} style={{ padding: "20px 56px", fontSize: "18px" }}>Start Free Trial</button>
+           <button className="btn-ghost" style={{ padding: "20px 56px", fontSize: "18px", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "100px" }}>Contact Sales</button>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{
-        background:"#030308",
-        borderTop:"1px solid rgba(255,255,255,0.05)",
-        padding:"60px"
-      }}>
-        <div style={{
-          maxWidth:"1200px",
-          margin:"0 auto",
-          display:"grid",
-          gridTemplateColumns:"2fr 1fr 1fr 1fr",
-          gap:"60px",
-          marginBottom:"40px"
-        }}>
+      <footer style={{ padding: "100px 40px 60px", background: "#000000", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "80px", marginBottom: "100px" }}>
           <div>
-            <div style={{
-              fontWeight:"800",
-              fontSize:"18px",
-              marginBottom:"12px",
-              display:"flex",
-              alignItems:"center", gap:"8px"
-            }}>
-              🛡️ UpGuard
-            </div>
-            <p style={{
-              color:"#64748b",
-              fontSize:"15px",
-              lineHeight:1.8,
-              maxWidth:"280px"
-            }}>
-              Built for mission-critical engineering
-              teams. The observability platform that
-              works at the scale you do.
-            </p>
+             <div style={{ fontSize: "24px", fontWeight: "900", color: "white", marginBottom: "24px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L4.5 5.5V10C4.5 14.7 7.7 19.1 12 21.5C16.3 19.1 19.5 14.7 19.5 10V5.5L12 2ZM17.5 10C17.5 13.8 15.2 17.3 12 19.4C8.8 17.3 6.5 13.8 6.5 10V6.6L12 4.1L17.5 6.6V10Z" fill="#bc2c12"/>
+                </svg>
+                UpGuard
+             </div>
+             <p style={{ color: "#64748b", fontSize: "16px", lineHeight: "1.7", maxWidth: "320px" }}>The world's most advanced platform for AI-driven customer growth and automation.</p>
           </div>
           {[
-            {
-              title:"PRODUCT",
-              links:["Uptime","Analytics",
-                     "Security","API Status"]
-            },
-            {
-              title:"INTEGRATIONS",
-              links:["Discord","Slack",
-                     "Email","Webhooks"]
-            },
-            {
-              title:"COMPANY",
-              links:["Privacy","Terms",
-                     "Security","GitHub"]
-            }
-          ].map((col,i) => (
+            { t: "Platform", l: ["Solutions", "Integration", "Security", "Pricing"] },
+            { t: "Company", l: ["About Us", "Careers", "Newsroom", "Contact"] },
+            { t: "Legal", l: ["Privacy", "Terms", "Security", "GDPR"] }
+          ].map((col, i) => (
             <div key={i}>
-              <div style={{
-                color:"#94a3b8",
-                fontSize:"11px",
-                fontWeight:"800",
-                letterSpacing:"2px",
-                textTransform:"uppercase",
-                marginBottom:"20px"
-              }}>{col.title}</div>
-              {col.links.map((link, j) => (
-                <div key={j} style={{
-                  color: "#64748b",
-                  fontSize: "14px",
-                  marginBottom: "10px",
-                  cursor: "pointer"
-                }}>{link}</div>
-              ))}
+               <div style={{ color: "white", fontSize: "14px", fontWeight: "950", letterSpacing: "2px", textTransform: "uppercase", marginBottom: "32px" }}>{col.t}</div>
+               <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+                  {col.l.map((link, j) => (
+                    <a key={j} href="#" style={{ color: "#64748b", fontSize: "15px", textDecoration: "none" }}>{link}</a>
+                  ))}
+               </div>
             </div>
           ))}
         </div>
-
-        <div style={{
-          borderTop:"1px solid rgba(255,255,255,0.05)",
-          paddingTop:"24px",
-          display:"flex",
-          justifyContent:"space-between",
-          alignItems:"center",
-          flexWrap:"wrap", gap:"12px"
-        }}>
-          <span style={{
-            color:"#475569", fontSize:"13px"
-          }}>
-            © 2026 UpGuard Technologies. 
-            Built for the developer web.
-          </span>
-          <span style={{
-            color:"#475569", fontSize:"13px"
-          }}>
-            Twitter • GitHub
-          </span>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", paddingTop: "40px", borderTop: "1px solid rgba(255,255,255,0.03)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "24px" }}>
+           <div style={{ color: "#475569", fontSize: "14px" }}>© 2026 UpGuard Technologies Inc. Built for the future.</div>
+           <div style={{ display: "flex", gap: "24px", color: "#475569", fontSize: "18px" }}>
+              <i className="fab fa-twitter" /><i className="fab fa-linkedin" /><i className="fab fa-github" />
+           </div>
         </div>
       </footer>
     </div>

@@ -104,172 +104,138 @@ export const Dashboard = () => {
   const stats = getStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#08080a] via-[#0a0a0d] to-black text-white selection:bg-[#00f09a]/20">
+    <div className="min-h-screen bg-black text-white selection:bg-[#bc2c12]/20 font-['Outfit']">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         {/* Summary Bar */}
-        {!loading && websites.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Total Assets</p>
-              <p className="text-2xl font-bold text-white">{stats.total}</p>
-            </div>
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-emerald-500/80 text-xs font-bold uppercase tracking-widest mb-1">Online</p>
-              <p className="text-2xl font-bold text-emerald-400">{stats.up}</p>
-            </div>
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-rose-500/80 text-xs font-bold uppercase tracking-widest mb-1">Offline</p>
-              <p className="text-2xl font-bold text-rose-400">{stats.down}</p>
-            </div>
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-[#00f09a]/80 text-xs font-bold uppercase tracking-widest mb-1">Avg Uptime</p>
-              <p className="text-2xl font-bold text-[#00f09a]">{stats.avgUptime}%</p>
-            </div>
-          </div>
-        )}
-
-        {/* Filters */}
-        {!loading && websites.length > 0 && allTags.length > 1 && (
-          <div className="flex flex-wrap gap-2 mb-8 items-center">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mr-2">Filter by tag:</span>
-            {allTags.map(tag => (
-              <button
-                key={tag}
-                onClick={() => setActiveFilter(tag)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
-                  activeFilter === tag
-                    ? 'bg-[#00f09a] border-[#00f09a] text-[#050505] shadow-lg shadow-[#00f09a]/10'
-                    : 'bg-slate-900/40 border-white/5 text-slate-400 hover:text-white hover:bg-slate-800/40'
-                }`}
-              >
-                {tag}
-              </button>
+        {!loading && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            {[
+              { l: 'TOTAL ASSETS', v: stats.total, c: 'text-white' },
+              { l: 'SYSTEMS ONLINE', v: stats.up, c: 'text-white' },
+              { l: 'SYSTEMS OFFLINE', v: stats.down, c: 'text-[#bc2c12]' },
+              { l: 'UPTIME ACCURACY', v: `${stats.avgUptime}%`, c: 'text-[#bc2c12]' }
+            ].map((stat, i) => (
+              <div key={i} className="bg-[#050505] border border-white/5 rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#bc2c12]/5 blur-3xl rounded-full -mr-16 -mt-16 transition-all group-hover:bg-[#bc2c12]/10" />
+                <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.2em] mb-2">{stat.l}</p>
+                <p className={`text-4xl font-black ${stat.c} tracking-tighter`}>{stat.v}</p>
+              </div>
             ))}
           </div>
         )}
 
         {/* Dashboard Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+          <div className="flex items-center gap-6">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">Monitoring Dashboard</h2>
-              <p className="text-slate-400 text-sm">Real-time status of your connected infrastructure</p>
+              <h2 className="text-3xl font-black tracking-tighter mb-1">Infrastructure Control</h2>
+              <p className="text-slate-500 text-sm font-medium">Global status monitoring for mission-critical services</p>
             </div>
             {isLive ? (
-              <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold border border-emerald-500/20 flex items-center gap-2 shadow-lg shadow-emerald-500/5">
-                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                LIVE
+              <span className="bg-[#bc2c12]/10 text-[#bc2c12] px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest border border-[#bc2c12]/20 flex items-center gap-2 shadow-lg shadow-[#bc2c12]/10">
+                <span className="w-1.5 h-1.5 bg-[#bc2c12] rounded-full animate-pulse shadow-[0_0_8px_#bc2c12]" />
+                LIVE FEED
               </span>
             ) : (
-              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
+              <span className="text-slate-600 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
                 <i className="fas fa-circle-notch fa-spin text-[8px]" />
-                Connecting...
+                Syncing
               </span>
             )}
           </div>
           <button 
             onClick={() => setShowAddModal(true)} 
-            className="group relative bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-6 py-2.5 rounded-xl text-sm font-bold transition-all hover:shadow-lg hover:shadow-[#00f09a]/20 active:scale-95"
+            className="w-full md:w-auto bg-[#bc2c12] hover:bg-[#d43216] text-white px-8 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:shadow-[0_15px_30px_-5px_rgba(188,44,18,0.4)] active:scale-95 flex items-center justify-center gap-3"
           >
-            <i className="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300" />
-            Add Website
+            <i className="fas fa-plus text-[10px]" />
+            Provision Website
           </button>
         </div>
 
         {loading ? (
           <DashboardSkeleton />
         ) : websites.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-slate-900/20 border border-dashed border-white/10 rounded-3xl">
-            <div className="relative mb-6">
-              <div className="absolute inset-0 bg-[#00f09a]/10 blur-3xl rounded-full" />
-              <div className="relative h-24 w-24 bg-slate-800 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
-                <i className="fas fa-rocket text-4xl text-[#00f09a]" />
+          <div className="flex flex-col items-center justify-center py-24 bg-[#050505] border border-white/5 rounded-[32px] shadow-2xl">
+            <div className="relative mb-8">
+              <div className="absolute inset-0 bg-[#bc2c12]/20 blur-[100px] rounded-full" />
+              <div className="relative h-28 w-28 bg-[#0c0c0e] rounded-[32px] flex items-center justify-center border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+                <i className="fas fa-satellite-dish text-5xl text-[#bc2c12]" />
               </div>
             </div>
-            <h3 className="text-xl font-bold mb-2">No websites monitored yet</h3>
-            <p className="text-slate-400 mb-8 max-w-xs text-center text-sm">
-              Connect your first asset to start receiving real-time uptime alerts and performance insights.
+            <h3 className="text-2xl font-black mb-3 tracking-tight">System Ready for Provisioning</h3>
+            <p className="text-slate-500 mb-10 max-w-sm text-center text-sm font-medium leading-relaxed">
+              Initialize your first monitoring node to start receiving real-time diagnostic data and global uptime alerts.
             </p>
             <button 
               onClick={() => setShowAddModal(true)} 
-              className="bg-white text-slate-950 px-8 py-3 rounded-xl text-sm font-bold hover:bg-slate-200 transition-colors"
+              className="bg-white text-black px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all shadow-xl active:scale-95"
             >
-              Add your first website
+              Initialize Node
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredWebsites.map((website) => (
               <div 
                 key={website.id}
                 onClick={() => navigate(`/website/${website.id}`)}
-                className="group relative bg-slate-900/40 border border-white/5 rounded-2xl p-6 cursor-pointer hover:bg-slate-800/40 hover:border-[#00f09a]/30 transition-all hover:shadow-2xl hover:shadow-[#00f09a]/5 backdrop-blur-sm"
+                className="group relative bg-[#050505] border border-white/5 rounded-[24px] p-8 cursor-pointer hover:border-[#bc2c12]/40 transition-all hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden"
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center space-x-3 overflow-hidden">
-                    <div className={`h-3 w-3 rounded-full shrink-0 shadow-sm ${
-                      website.isPaused ? 'bg-slate-500' :
-                      website.latest_status === 'Up' ? 'bg-emerald-400 shadow-emerald-500/40' : 
-                      website.latest_status === 'Down' ? 'bg-rose-400 shadow-rose-500/40' : 'bg-slate-400'
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#bc2c12]/2 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-[#bc2c12]/5 transition-all" />
+                
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center space-x-4 overflow-hidden">
+                    <div className={`h-2.5 w-2.5 rounded-full shrink-0 ${
+                      website.isPaused ? 'bg-slate-700' :
+                      website.latest_status === 'Up' ? 'bg-[#bc2c12] shadow-[0_0_10px_#bc2c12]' : 
+                      'bg-rose-600 animate-pulse shadow-[0_0_15px_#e11d48]'
                     }`} />
-                    <h3 className="font-bold text-white truncate text-sm group-hover:text-[#00f09a] transition-colors" title={website.url}>
-                      {website.url.replace(/^https?:\/\//, '')}
+                    <h3 className="font-black text-white truncate text-base tracking-tight group-hover:text-[#bc2c12] transition-colors" title={website.url}>
+                      {website.url.replace(/^https?:\/\//, '').toUpperCase()}
                     </h3>
                   </div>
                   {isMaintActive(website) ? (
-                    <span className="text-[10px] uppercase font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 animate-pulse">
-                      <i className="fas fa-tools mr-1" /> Maint.
+                    <span className="text-[9px] uppercase font-black text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">
+                      OFFLINE FIX
                     </span>
                   ) : website.isPaused && (
-                    <span className="text-[10px] uppercase font-bold text-slate-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
-                      Paused
+                    <span className="text-[9px] uppercase font-black text-slate-500 bg-white/5 px-2.5 py-1 rounded-md border border-white/5">
+                      PAUSED
                     </span>
                   )}
                 </div>
 
-                {/* Tags Badge */}
-                {(website.tags || []).length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-4 h-5 overflow-hidden">
-                    {website.tags.map(tag => (
-                      <span key={tag} className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${getTagColor(tag)}`}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-black/20 rounded-xl p-3 border border-white/5">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Latency</p>
-                    <p className="text-lg font-bold text-slate-200">
-                      {website.isPaused ? '--' : `${website.last_response_ms || 0}ms`}
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-black border border-white/5 rounded-2xl p-4 group-hover:bg-[#0c0c0e] transition-colors">
+                    <p className="text-[9px] text-slate-600 uppercase font-black tracking-widest mb-1.5">Latency</p>
+                    <p className="text-xl font-black text-white tracking-tighter">
+                      {website.isPaused ? '--' : `${website.last_response_ms || 0} MS`}
                     </p>
                   </div>
-                  <div className="bg-black/20 rounded-xl p-3 border border-white/5">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Uptime</p>
-                    <p className="text-lg font-bold text-slate-200">{website.uptime_percentage}%</p>
+                  <div className="bg-black border border-white/5 rounded-2xl p-4 group-hover:bg-[#0c0c0e] transition-colors">
+                    <p className="text-[9px] text-slate-600 uppercase font-black tracking-widest mb-1.5">Uptime</p>
+                    <p className="text-xl font-black text-[#bc2c12] tracking-tighter">{website.uptime_percentage}%</p>
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500 font-medium">
-                  <div className="flex items-center">
-                    <i className="fas fa-clock mr-1.5 opacity-50" />
-                    {website.last_checked ? new Date(website.last_checked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Never'}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-[10px] text-slate-600 font-black uppercase tracking-widest">
+                    <i className="far fa-clock text-[#bc2c12] opacity-50" />
+                    {website.last_checked ? new Date(website.last_checked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
                         api.exportCsv(website.id, 7);
                       }}
-                      title="Quick Export (Last 7 days)"
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-white/5"
+                      className="p-2.5 rounded-xl bg-white/5 hover:bg-[#bc2c12] hover:text-white text-slate-500 transition-all border border-white/5"
                     >
-                      <i className="fas fa-file-export text-[10px]" />
+                      <i className="fas fa-share-square text-[10px]" />
                     </button>
-                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-[#00f09a]" />
+                    <i className="fas fa-chevron-right text-[10px] text-slate-700 group-hover:text-[#bc2c12] group-hover:translate-x-1 transition-all" />
                   </div>
                 </div>
               </div>
