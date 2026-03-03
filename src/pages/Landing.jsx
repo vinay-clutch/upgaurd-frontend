@@ -30,61 +30,79 @@ function BeamCanvas() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const LAYERS = 3;
-    const BEAMS_PER_LAYER = 8;
+    const BEAMS_PER_LAYER = window.innerWidth < 768 ? 4 : 8; // Fewer beams on mobile
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
       ctx.scale(dpr, dpr);
+      
       beamsRef.current = [];
+      const count = w < 768 ? 4 : 8;
       for (let l = 1; l <= LAYERS; l++) {
-        for (let i = 0; i < BEAMS_PER_LAYER; i++) {
-          beamsRef.current.push(
-            createBeam(window.innerWidth, window.innerHeight, l)
-          );
+        for (let i = 0; i < count; i++) {
+          beamsRef.current.push(createBeam(w, h, l));
         }
       }
     };
 
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resize, 250);
+    };
+
     resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", handleResize);
 
     const drawBeam = (beam) => {
       ctx.save();
       ctx.translate(beam.x, beam.y);
       ctx.rotate((beam.angle * Math.PI) / 180);
-      const op = Math.min(
-        1,
-        beam.opacity * (0.8 + Math.sin(beam.pulse) * 0.4)
-      );
+      
+      const op = Math.min(1, beam.opacity * (0.8 + Math.sin(beam.pulse) * 0.4));
+      
+      // Use a fixed linear gradient to avoid creating it every frame if possible
+      // or at least simplify the content inside save/restore
       const grad = ctx.createLinearGradient(0, 0, 0, beam.length);
-      grad.addColorStop(0, "rgba(139,92,246,0)");
-      grad.addColorStop(0.2, `rgba(139,92,246,${op * 0.5})`);
-      grad.addColorStop(0.5, `rgba(139,92,246,${op})`);
-      grad.addColorStop(0.8, `rgba(139,92,246,${op * 0.5})`);
-      grad.addColorStop(1, "rgba(139,92,246,0)");
+      const color = "139, 92, 246"; // Indigo-500
+      grad.addColorStop(0, `rgba(${color}, 0)`);
+      grad.addColorStop(0.2, `rgba(${color}, ${op * 0.3})`);
+      grad.addColorStop(0.5, `rgba(${color}, ${op})`);
+      grad.addColorStop(0.8, `rgba(${color}, ${op * 0.3})`);
+      grad.addColorStop(1, `rgba(${color}, 0)`);
+      
       ctx.fillStyle = grad;
-      ctx.filter = `blur(${2 + beam.layer * 2}px)`;
+      // Removed ctx.filter (blur) as it's very expensive. 
+      // The gradient and narrow width already provide a sleek look.
       ctx.fillRect(-beam.width / 2, 0, beam.width, beam.length);
       ctx.restore();
     };
 
     const animate = () => {
-      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      grad.addColorStop(0, "#05050f");
-      grad.addColorStop(1, "#080818");
-      ctx.fillStyle = grad;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw background gradient once
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      bgGrad.addColorStop(0, "#05050f");
+      bgGrad.addColorStop(1, "#080818");
+      ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const h = window.innerHeight;
+      const w = window.innerWidth;
 
       beamsRef.current.forEach((beam) => {
         beam.y -= beam.speed * (beam.layer / LAYERS + 0.5);
         beam.pulse += beam.pulseSpeed;
         if (beam.y + beam.length < -50) {
-          beam.y = window.innerHeight + 50;
-          beam.x = Math.random() * window.innerWidth;
+          beam.y = h + 50;
+          beam.x = Math.random() * w;
         }
         drawBeam(beam);
       });
@@ -94,7 +112,7 @@ function BeamCanvas() {
     animate();
 
     return () => {
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(rafRef.current);
     };
   }, []);
@@ -107,6 +125,7 @@ function BeamCanvas() {
         inset: 0,
         zIndex: 0,
         pointerEvents: "none",
+        willChange: "transform"
       }}
     />
   );
@@ -315,6 +334,18 @@ export function Landing() {
           font-weight: 700;
           letter-spacing: 0.5px;
         }
+        .responsive-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 40px;
+          align-items: center;
+        }
+        @media (min-width: 992px) {
+          .responsive-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+          }
+        }
       `}</style>
 
       {/* ── NAVBAR ── */}
@@ -323,11 +354,12 @@ export function Landing() {
         zIndex: 1000,
         display: "flex", alignItems: "center",
         justifyContent: "space-between",
-        padding: "18px 60px",
+        padding: "14px 24px",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
         backdropFilter: "blur(20px)",
-        background: "rgba(5,5,15,0.85)"
-      }}>
+        background: "rgba(5,5,15,0.85)",
+        maxWidth: "100vw"
+      }} className="md:px-20 px-6">
         <div style={{
           display: "flex", alignItems: "center",
           gap: "10px", fontWeight: "800",
@@ -417,10 +449,10 @@ export function Landing() {
 
           {/* Heading */}
           <h1 style={{
-            fontSize: "clamp(52px, 8vw, 96px)",
+            fontSize: "clamp(40px, 8vw, 96px)",
             fontWeight: 900,
             lineHeight: 1.0,
-            letterSpacing: "-3px",
+            letterSpacing: "-2px",
             marginBottom: "24px",
             color: "white"
           }}>
@@ -540,15 +572,15 @@ export function Landing() {
             </div>
 
             {/* Dashboard body */}
-            <div style={{ display:"flex", height:"360px" }}>
-              {/* Sidebar */}
+            <div style={{ display:"flex", height:"360px" }} className="flex-col md:flex-row">
+              {/* Sidebar - hidden on mobile mockup for space */}
               <div style={{
                 width: "180px",
                 background: "#080818",
                 borderRight: "1px solid rgba(255,255,255,0.05)",
                 padding: "20px 14px",
                 flexShrink: 0
-              }}>
+              }} className="hidden md:block">
                 <div style={{
                   color:"#7c3aed", fontWeight:"800",
                   fontSize:"14px", marginBottom:"24px",
@@ -761,14 +793,10 @@ export function Landing() {
       </div>
 
       {/* ── FEATURE 1 - Uptime Monitoring ── */}
-      <section style={{
-        padding:"120px 60px",
-        maxWidth:"1200px",
-        margin:"0 auto",
-        display:"grid",
-        gridTemplateColumns:"1fr 1fr",
-        gap:"80px",
-        alignItems:"center"
+      <section className="responsive-grid md:py-24" style={{
+        padding: "80px 24px",
+        maxWidth: "1200px",
+        margin: "0 auto",
       }}>
         <div>
           <div className="section-label">UPTIME MONITORING</div>
@@ -855,14 +883,10 @@ export function Landing() {
       </section>
 
       {/* ── FEATURE 2 - Analytics ── */}
-      <section style={{
-        padding:"120px 60px",
-        maxWidth:"1200px",
-        margin:"0 auto",
-        display:"grid",
-        gridTemplateColumns:"1fr 1fr",
-        gap:"80px",
-        alignItems:"center"
+      <section className="responsive-grid md:py-24" style={{
+        padding: "80px 24px",
+        maxWidth: "1200px",
+        margin: "0 auto",
       }}>
         {/* Analytics mockup */}
         <div className="mockup-card" style={{ padding:"24px" }}>
@@ -954,14 +978,10 @@ export function Landing() {
       </section>
 
       {/* ── FEATURE 3 - Alerts ── */}
-      <section style={{
-        padding:"120px 60px",
-        maxWidth:"1200px",
-        margin:"0 auto",
-        display:"grid",
-        gridTemplateColumns:"1fr 1fr",
-        gap:"80px",
-        alignItems:"center"
+      <section className="responsive-grid md:py-24" style={{
+        padding: "80px 24px",
+        maxWidth: "1200px",
+        margin: "0 auto",
       }}>
         <div>
           <div className="section-label">INSTANT ALERTS</div>
