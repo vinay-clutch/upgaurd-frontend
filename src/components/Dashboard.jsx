@@ -16,11 +16,13 @@ export const Dashboard = () => {
 
   const fetchWebsites = async () => {
     try {
-      const data = await api.getWebsites();
+      const response = await api.getWebsites();
+      // Backend returns { websites: [], total: 0 }
+      const data = Array.isArray(response) ? response : (response?.websites || []);
       setWebsites(data);
-      setLoading(true);
     } catch (error) {
       console.error('Failed to load websites:', error);
+      setWebsites([]);
     } finally {
       setLoading(false);
     }
