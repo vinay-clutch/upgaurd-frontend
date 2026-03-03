@@ -12,7 +12,7 @@ export const IncidentHistory = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    document.title = 'Incidents | Antigravtiven';
+    document.title = 'Incidents | UpGuard';
     if (websiteId) loadIncidents();
   }, [websiteId]);
 

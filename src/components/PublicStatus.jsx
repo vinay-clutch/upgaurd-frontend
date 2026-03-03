@@ -121,7 +121,7 @@ export const PublicStatus = () => {
             <div className="h-8 w-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
               <i className="fas fa-shield-alt text-indigo-400 text-sm" />
             </div>
-            <span className="text-sm font-bold text-slate-300 tracking-tight">Antigravtiven</span>
+            <span className="text-sm font-bold text-slate-300 tracking-tight">UpGuard</span>
           </div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Status Page</span>
         </div>
@@ -277,7 +277,7 @@ export const PublicStatus = () => {
       <footer className="border-t border-white/5 py-6">
         <div className="max-w-3xl mx-auto px-4 flex items-center justify-between">
           <p className="text-slate-600 text-xs font-medium">
-            Powered by <span className="text-slate-400 font-bold">Antigravtiven</span>
+            Powered by <span className="text-slate-400 font-bold">UpGuard</span>
           </p>
           <p className="text-slate-600 text-xs font-medium">
             {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
