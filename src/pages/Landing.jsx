@@ -1,5 +1,173 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+
+// ═══════════════════════════════════
+// BEAM ANIMATION (Premium background)
+// ═══════════════════════════════════
+function createBeam(width, height, layer) {
+  const angle = -35 + Math.random() * 10;
+  return {
+    x: Math.random() * width,
+    y: Math.random() * height,
+    width: 6 + layer * 3,
+    length: height * 2.5,
+    angle,
+    speed: 0.15 + layer * 0.1,
+    opacity: 0.05 + layer * 0.03,
+    pulse: Math.random() * Math.PI * 2,
+    pulseSpeed: 0.01 + Math.random() * 0.01,
+    layer,
+  };
+}
+
+function BeamCanvas() {
+  const canvasRef = useRef(null);
+  const beamsRef = useRef([]);
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const LAYERS = 3;
+
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.scale(dpr, dpr);
+      
+      beamsRef.current = [];
+      const count = w < 768 ? 4 : 8;
+      for (let l = 1; l <= LAYERS; l++) {
+        for (let i = 0; i < count; i++) {
+          beamsRef.current.push(createBeam(w, h, l));
+        }
+      }
+    };
+
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resize, 250);
+    };
+
+    resize();
+    window.addEventListener("resize", handleResize);
+
+    const drawBeam = (beam) => {
+      ctx.save();
+      ctx.translate(beam.x, beam.y);
+      ctx.rotate((beam.angle * Math.PI) / 180);
+      
+      const op = Math.min(0.3, beam.opacity * (0.8 + Math.sin(beam.pulse) * 0.4));
+      const grad = ctx.createLinearGradient(0, 0, 0, beam.length);
+      const color = "0, 240, 154";
+      grad.addColorStop(0, `rgba(${color}, 0)`);
+      grad.addColorStop(0.5, `rgba(${color}, ${op})`);
+      grad.addColorStop(1, `rgba(${color}, 0)`);
+      
+      ctx.fillStyle = grad;
+      ctx.fillRect(-beam.width / 2, 0, beam.width, beam.length);
+      ctx.restore();
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const h = window.innerHeight;
+      const w = window.innerWidth;
+
+      beamsRef.current.forEach((beam) => {
+        beam.y -= beam.speed;
+        beam.pulse += beam.pulseSpeed;
+        if (beam.y + beam.length < -50) {
+          beam.y = h + 50;
+          beam.x = Math.random() * w;
+        }
+        drawBeam(beam);
+      });
+
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: "none",
+        willChange: "transform"
+      }}
+    />
+  );
+}
+
+// ═══════════════════════════════════
+// MARQUEE (left to right scolling)
+// ═══════════════════════════════════
+const techs = [
+  "React", "Node.js", "Next.js", "Vue",
+  "Django", "Laravel", "FastAPI", "Spring",
+  "Express", "NestJS", "Nuxt", "Remix"
+];
+
+function Marquee() {
+  return (
+    <div style={{
+      overflow: "hidden",
+      borderTop: "1px solid rgba(255,255,255,0.06)",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      padding: "20px 0",
+      background: "rgba(255,255,255,0.01)"
+    }}>
+      <style>{`
+        @keyframes marqueeRev {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+      `}</style>
+      <div style={{
+        display: "flex",
+        animation: "marqueeRev 30s linear infinite",
+        width: "max-content"
+      }}>
+        {techs.concat(techs).map((t, i) => (
+          <span key={i} style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "0 32px",
+            color: "#64748b",
+            fontSize: "14px",
+            fontWeight: "600",
+            whiteSpace: "nowrap"
+          }}>
+            <span style={{
+              width: "6px", height: "6px",
+              borderRadius: "50%",
+              background: "#00f09a",
+              boxShadow: "0 0 10px #00f09a"
+            }}/>
+            {t}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function Landing() {
   const navigate = useNavigate();
@@ -7,7 +175,7 @@ export function Landing() {
 
   useEffect(() => {
     if (token) navigate("/dashboard");
-    document.title = "UpGuard | Infrastructure Intelligence";
+    document.title = "UpGuard — Premium Infrastructure Monitoring";
   }, [token, navigate]);
 
   return (
@@ -20,27 +188,22 @@ export function Landing() {
           --bg-dark: #050505;
           --bg-card: #0b0b0d;
           --border: rgba(255, 255, 255, 0.05);
-          --text-secondary: #64748b;
+          --text-secondary: #94a3b8;
         }
 
         .landing-root {
           background-color: var(--bg-dark);
           color: white;
-          font-family: 'Inter', -apple-system, sans-serif;
+          font-family: 'Inter', sans-serif;
           min-height: 100vh;
           overflow-x: hidden;
           position: relative;
         }
 
-        .glow-bg {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: radial-gradient(circle at 50% -20%, rgba(0, 240, 154, 0.07) 0%, transparent 50%),
-                      radial-gradient(circle at 0% 100%, rgba(0, 240, 154, 0.02) 0%, transparent 40%),
-                      radial-gradient(circle at 100% 100%, rgba(0, 240, 154, 0.02) 0%, transparent 40%);
+        .hero-glow {
+          position: absolute;
+          top: 0; left: 0; right: 0; height: 100vh;
+          background: radial-gradient(circle at 50% -20%, rgba(0, 240, 154, 0.08) 0%, transparent 70%);
           pointer-events: none;
           z-index: 0;
         }
@@ -48,328 +211,237 @@ export function Landing() {
         /* ── NAVBAR ── */
         .nav-container {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
+          top: 0; left: 0; right: 0;
           height: 80px;
           display: flex;
           align-items: center;
           justify-content: space-between;
           padding: 0 5%;
           z-index: 1000;
-          background: rgba(5, 5, 5, 0.8);
-          backdrop-filter: blur(10px);
-        }
-
-        .nav-left {
-          display: flex;
-          align-items: center;
-          gap: 40px;
+          background: rgba(5, 5, 5, 0.85);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--border);
         }
 
         .nav-logo {
           display: flex;
           align-items: center;
           gap: 10px;
-          font-family: 'Outfit', sans-serif;
+          font-family: 'Outfit';
           font-weight: 800;
-          font-size: 22px;
+          font-size: 24px;
           color: white;
-          text-decoration: none;
-          letter-spacing: -1px;
+          cursor: pointer;
         }
 
-        .logo-icon {
-          width: 24px;
-          height: 24px;
+        .logo-box {
+          width: 28px; height: 28px;
           background: var(--primary);
-          border-radius: 6px;
+          border-radius: 8px;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          mask: url('https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg') no-repeat center;
-          -webkit-mask: url('https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg') no-repeat center;
+          align-items: center; justify-content: center;
+          color: #050505;
+          font-size: 16px;
         }
 
-        .nav-links {
-          display: none;
-          gap: 30px;
-        }
-
-        @media (min-width: 1024px) {
-          .nav-links { display: flex; }
-        }
-
-        .nav-link {
-          color: #94a3b8;
-          text-decoration: none;
-          font-size: 14px;
-          font-weight: 500;
-          transition: color 0.2s;
-        }
-
-        .nav-link:hover { color: white; }
-
-        .nav-right {
+        .nav-actions {
           display: flex;
-          align-items: center;
-          gap: 24px;
+          gap: 15px;
         }
 
-        .btn-text {
-          color: white;
-          text-decoration: none;
-          font-size: 14px;
+        .btn-signin {
+          padding: 10px 24px;
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 12px;
           font-weight: 600;
-        }
-
-        .btn-outline {
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          padding: 10px 22px;
-          border-radius: 100px;
-          color: white;
           font-size: 14px;
-          font-weight: 600;
-          text-decoration: none;
+          color: white;
+          background: transparent;
+          cursor: pointer;
           transition: all 0.2s;
         }
 
-        .btn-outline:hover {
-          background: rgba(255, 255, 255, 0.05);
-          border-color: rgba(255, 255, 255, 0.3);
+        .btn-signin:hover {
+          background: rgba(255,255,255,0.05);
+          border-color: rgba(255,255,255,0.3);
         }
 
-        /* ── HERO SECTION ── */
-        .hero-section {
-          padding-top: 180px;
-          padding-bottom: 100px;
-          text-align: center;
-          position: relative;
-          z-index: 1;
-        }
-
-        .hero-title {
-          font-family: 'Outfit', sans-serif;
-          font-size: clamp(40px, 8vw, 84px);
-          font-weight: 900;
-          line-height: 1.05;
-          letter-spacing: -3px;
-          margin-bottom: 24px;
-          max-width: 900px;
-          margin-left: auto;
-          margin-right: auto;
-          color: white;
-        }
-
-        .hero-subtitle {
-          color: var(--text-secondary);
-          font-size: 18px;
-          line-height: 1.6;
-          max-width: 600px;
-          margin: 0 auto 40px;
-          font-weight: 400;
-        }
-
-        .btn-cta {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
+        .btn-getstarted {
+          padding: 10px 24px;
           background: var(--primary);
           color: #050505;
-          padding: 16px 36px;
-          border-radius: 100px;
-          font-size: 16px;
+          border-radius: 12px;
           font-weight: 800;
-          text-decoration: none;
-          transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-          box-shadow: 0 10px 40px rgba(0, 240, 154, 0.25);
+          font-size: 14px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s;
         }
 
-        .btn-cta:hover {
+        .btn-getstarted:hover {
+          background: #00cc82;
           transform: translateY(-2px);
-          box-shadow: 0 15px 50px rgba(0, 240, 154, 0.4);
-          background: #00ffaa;
+          box-shadow: 0 10px 20px rgba(0, 240, 154, 0.2);
         }
 
-        .btn-cta i {
-          font-size: 14px;
-          transition: transform 0.3s;
+        /* ── HERO ── */
+        .hero-section {
+          padding: 180px 20px 80px;
+          text-align: center;
+          max-width: 1200px;
+          margin: 0 auto;
+          position: relative;
+          z-index: 10;
         }
 
-        .btn-cta:hover i {
-          transform: translate(2px, -2px);
+        .hero-h1 {
+          font-family: 'Outfit';
+          font-size: clamp(40px, 8vw, 88px);
+          font-weight: 900;
+          letter-spacing: -3px;
+          line-height: 1;
+          margin-bottom: 24px;
         }
 
-        .trust-section {
-          margin-top: 60px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
+        .hero-h1 span {
+          background: linear-gradient(135deg, #00f09a, #06b6d4);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
         }
 
-        .trust-text {
+        .hero-p {
           color: var(--text-secondary);
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-
-        .rating-box {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .stars {
-          color: #fbbf24;
-          display: flex;
-          gap: 2px;
-        }
-
-        .rating-score {
-          font-weight: 800;
-          font-size: 14px;
-          color: white;
-        }
-
-        .google-icon {
-          height: 14px;
-          opacity: 0.8;
+          font-size: 20px;
+          max-width: 650px;
+          margin: 0 auto 40px;
+          line-height: 1.6;
         }
 
         /* ── MOCKUP ── */
-        .mockup-container {
-          max-width: 1000px;
-          margin: 80px auto 0;
-          padding: 0 20px;
+        .mockup-wrapper {
+          max-width: 950px;
+          margin: 60px auto 0;
           position: relative;
+          perspective: 1000px;
+          padding: 0 20px;
         }
 
-        .mockup-glow {
+        .mockup-glow-line {
           position: absolute;
-          top: -20px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 80%;
-          height: 2px;
+          top: -1px; left: 10%; right: 10%; height: 2px;
           background: linear-gradient(90deg, transparent, var(--primary), transparent);
-          box-shadow: 0 0 30px var(--primary);
+          box-shadow: 0 0 20px var(--primary);
+          z-index: 20;
           opacity: 0.8;
         }
 
-        .mockup-card {
+        .mockup-container {
           background: var(--bg-card);
           border: 1px solid var(--border);
-          border-radius: 20px;
+          border-radius: 24px;
           overflow: hidden;
-          box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+          box-shadow: 0 50px 100px rgba(0,0,0,0.6);
           display: flex;
-          height: 540px;
+          height: 500px;
+          text-align: left;
         }
 
-        .mockup-sidebar {
-          width: 220px;
-          border-right: 1px solid var(--border);
-          padding: 30px 20px;
-          display: none;
+        .mockup-side {
+          width: 200px;
           background: #08080a;
+          border-right: 1px solid var(--border);
+          padding: 24px 16px;
+          display: none;
         }
 
-        @media (min-width: 768px) {
-          .mockup-sidebar { display: block; }
-        }
-
-        .sidebar-logo {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-weight: 800;
-          font-size: 16px;
-          margin-bottom: 40px;
-        }
-
-        .sidebar-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 16px;
-          border-radius: 12px;
-          font-size: 13px;
-          color: var(--text-secondary);
-          margin-bottom: 4px;
-        }
-
-        .sidebar-item.active {
-          background: rgba(255, 255, 255, 0.05);
-          color: white;
-        }
+        @media (min-width: 768px) { .mockup-side { display: block; } }
 
         .mockup-main {
           flex: 1;
-          padding: 30px;
-          overflow: hidden;
+          padding: 24px;
+          background: var(--bg-card);
         }
 
-        .mockup-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 30px;
-        }
-
-        .header-title {
-          font-size: 18px;
-          font-weight: 800;
-          font-family: 'Outfit';
-        }
-
-        .mockup-grid {
+        .mockup-stat-grid {
           display: grid;
-          grid-template-columns: 2fr 1fr;
-          gap: 20px;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+          margin-bottom: 20px;
         }
 
-        .card-inner {
+        .mockup-stat-card {
+           background: rgba(255,255,255,0.02);
+           border: 1px solid var(--border);
+           border-radius: 12px;
+           padding: 16px;
+        }
+
+        /* ── FEATURE SECTIONS (RESTORED) ── */
+        .features-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+          padding: 80px 5%;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+          .features-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .feature-item {
           background: rgba(255,255,255,0.02);
           border: 1px solid var(--border);
-          border-radius: 16px;
-          padding: 24px;
+          padding: 40px 32px;
+          border-radius: 24px;
+          transition: all 0.3s;
         }
 
-        .chart-placeholder {
-          height: 200px;
-          width: 100%;
-          position: relative;
-          margin-top: 20px;
+        .feature-item:hover {
+          border-color: rgba(0, 240, 154, 0.4);
+          background: rgba(0, 240, 154, 0.03);
+          transform: translateY(-8px);
         }
 
-        .chart-line {
-          width: 100%;
-          height: 100%;
-          stroke: var(--primary);
-          stroke-width: 3;
-          fill: none;
+        .f-icon {
+          width: 48px; height: 48px;
+          background: var(--primary);
+          border-radius: 12px;
+          display: flex;
+          align-items: center; justify-content: center;
+          color: #050505;
+          font-size: 20px;
+          margin-bottom: 24px;
         }
 
-        .chart-gradient {
-          fill: url(#chartGrad);
+        .f-title {
+          font-family: 'Outfit';
+          font-size: 20px;
+          font-weight: 800;
+          margin-bottom: 12px;
+        }
+
+        .f-p {
+          color: var(--text-secondary);
+          font-size: 15px;
+          line-height: 1.6;
         }
 
         /* ── FOOTER ── */
-        .footer {
-          padding: 100px 0 60px;
-          text-align: center;
+        .footer-root {
+          padding: 100px 5% 40px;
           border-top: 1px solid var(--border);
           margin-top: 100px;
+          text-align: center;
         }
 
         .footer-logo {
           font-family: 'Outfit';
           font-weight: 800;
-          font-size: 20px;
-          margin-bottom: 20px;
+          font-size: 22px;
+          margin-bottom: 30px;
           display: inline-block;
         }
 
@@ -378,178 +450,161 @@ export function Landing() {
           justify-content: center;
           gap: 40px;
           margin-bottom: 40px;
+          flex-wrap: wrap;
         }
 
         .footer-link {
           color: var(--text-secondary);
           text-decoration: none;
           font-size: 14px;
+          font-weight: 500;
           transition: color 0.2s;
         }
 
         .footer-link:hover { color: white; }
 
-        .copyright {
+        .footer-copy {
           color: #334155;
           font-size: 12px;
-          font-weight: 600;
+          font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 1px;
+          letter-spacing: 2px;
+        }
+
+        .btn-xl {
+          padding: 16px 40px;
+          font-size: 16px;
+          font-weight: 800;
+          margin-top: 30px;
         }
       `}</style>
 
-      <div className="glow-bg" />
+      <BeamCanvas />
+      <div className="hero-glow" />
 
       {/* NAVBAR */}
       <nav className="nav-container">
-        <div className="nav-left">
-          <a href="/" className="nav-logo">
-            <div className="logo-icon" />
-            UpGuard
-          </a>
-          <div className="nav-links">
-            <a href="#" className="nav-link">Why UpGuard?</a>
-            <a href="#" className="nav-link">Services</a>
-            <a href="#" className="nav-link">How it works</a>
-            <a href="#" className="nav-link">FAQ</a>
-          </div>
+        <div className="nav-logo" onClick={() => navigate("/")}>
+          <div className="logo-box"><i className="fas fa-shield-alt" /></div>
+          UpGuard
         </div>
-        <div className="nav-right">
-          <a href="/login" className="btn-text">Login</a>
-          <a href="/register" className="btn-outline">Create account</a>
+        <div className="nav-actions">
+          <button className="btn-signin" onClick={() => navigate("/login")}>Login</button>
+          <button className="btn-getstarted" onClick={() => navigate("/register")}>Sign Up</button>
         </div>
       </nav>
 
       {/* HERO SECTION */}
       <section className="hero-section">
-        <div className="container mx-auto px-6">
-          <h1 className="hero-title">
-            Take Control of Your Digital Infrastructure
-          </h1>
-          <p className="hero-subtitle">
-            UpGuard offers a seamless, secure experience for monitoring your digital assets. Instant alerts, optimized performance, and premium design.
-          </p>
-          <a href="/register" className="btn-cta">
-            Get started
-            <i className="fas fa-arrow-right" />
-          </a>
+        <h1 className="hero-h1">
+          Infrastructure Intelligence<br/>
+          <span>Redefined.</span>
+        </h1>
+        <p className="hero-p">
+          Professional uptime monitoring, globally distributed checks, and 
+          instant alert dispatch — made for high-availability engineering teams.
+        </p>
 
-          <div className="trust-section">
-            <span className="trust-text">They trust us</span>
-            <div className="rating-box">
-              <div className="stars">
-                {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star" />)}
-              </div>
-              <span className="rating-score">4,9</span>
-              <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google" className="google-icon" />
-            </div>
-          </div>
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button className="btn-getstarted btn-xl" onClick={() => navigate("/register")}>
+            Start Monitoring Free
+          </button>
+          <button className="btn-signin btn-xl" onClick={() => navigate("/login")}>
+            View Dashboard →
+          </button>
         </div>
 
-        {/* MOCKUP PREVIEW */}
-        <div className="mockup-container">
-          <div className="mockup-glow" />
-          <div className="mockup-card">
-            <div className="mockup-sidebar">
-              <div className="sidebar-logo">
-                <div className="logo-icon" style={{width: '20px', height: '20px'}} />
-                UpGuard
-              </div>
-              <div className="sidebar-item active">
-                <i className="fas fa-th-large" /> Dashboard
-              </div>
-              <div className="sidebar-item">
-                <i className="fas fa-server" /> Assets
-              </div>
-              <div className="sidebar-item">
-                <i className="fas fa-chart-line" /> Market
-                <span style={{marginLeft: 'auto', fontSize: '10px', background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px'}}>New</span>
-              </div>
-              <div className="sidebar-item">
-                <i className="fas fa-exchange-alt" /> Trade
-              </div>
+        {/* MOCKUP */}
+        <div className="mockup-wrapper">
+          <div className="mockup-glow-line" />
+          <div className="mockup-container">
+            <div className="mockup-side">
+               <div style={{ marginBottom: '32px', fontWeight: '800', fontSize: '14px', color: '#00f09a' }}>🛡️ UpGuard App</div>
+               {[...Array(5)].map((_, i) => (
+                 <div key={i} style={{ height: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', marginBottom: '16px', width: (Math.random() * 40 + 60) + '%' }} />
+               ))}
             </div>
-
             <div className="mockup-main">
-              <div className="mockup-header">
-                <div>
-                  <p style={{fontSize: '10px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px'}}>Real-time Monitoring</p>
-                  <h4 className="header-title">Main Dashboard</h4>
-                </div>
-                <div style={{display: 'flex', gap: '15px', color: '#64748b'}}>
-                  <i className="fas fa-bell" />
-                  <i className="fas fa-search" />
-                </div>
-              </div>
-
-              <div className="mockup-grid">
-                <div className="card-inner">
-                  <p style={{fontSize: '11px', color: '#64748b', fontWeight: '600'}}>Global Uptime</p>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px'}}>
-                    <h3 style={{fontSize: '32px', fontWeight: '900', fontFamily: 'Outfit'}}>99.98%</h3>
-                    <span style={{color: '#00f09a', fontSize: '12px', fontWeight: '800'}}>+0.4%</span>
-                  </div>
-                  
-                  <div className="chart-placeholder">
-                    <svg viewBox="0 0 500 200" style={{width: '100%', height: '100%', overflow: 'visible'}}>
-                      <defs>
-                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#00f09a" stopOpacity="0.2" />
-                          <stop offset="100%" stopColor="#00f09a" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                      <path className="chart-gradient" d="M0,180 C50,160 100,100 150,120 S250,50 300,80 S400,20 500,60 L500,200 L0,200 Z" />
-                      <path className="chart-line" d="M0,180 C50,160 100,100 150,120 S250,50 300,80 S400,20 500,60" />
-                      <circle cx="500" cy="60" r="6" fill="#00f09a" />
-                      <circle cx="500" cy="60" r="12" fill="#00f09a" opacity="0.3" />
-                    </svg>
-                  </div>
-                </div>
-
-                <div style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
-                  <div className="card-inner" style={{flex: 1}}>
-                    <p style={{fontSize: '11px', color: '#64748b', fontWeight: '600', marginBottom: '15px'}}>Quick Status</p>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '15px'}}>
-                      <div style={{width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,191,0,0.1)', display: 'flex', alignItems: 'center', justifyCenter: 'center', color: '#fbbf24'}}>
-                        <i className="fas fa-bolt" />
-                      </div>
-                      <div style={{flex: 1}}>
-                        <p style={{fontSize: '12px', fontWeight: '800'}}>API Edge</p>
-                        <p style={{fontSize: '10px', color: '#64748b'}}>24ms Latency</p>
-                      </div>
+               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'24px' }}>
+                  <div style={{ height:'20px', width:'150px', background:'rgba(255,255,255,0.08)', borderRadius:'6px' }} />
+                  <div style={{ height:'20px', width:'80px', background:'rgba(0, 240, 154, 0.15)', borderRadius:'6px' }} />
+               </div>
+               <div className="mockup-stat-grid">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="mockup-stat-card">
+                       <div style={{ height:'8px', width:'50%', background:'rgba(255,255,255,0.04)', borderRadius:'4px', marginBottom:'12px' }} />
+                       <div style={{ height:'24px', width:'80%', background:'rgba(255,255,255,0.08)', borderRadius:'4px' }} />
                     </div>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <div style={{width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,240,154,0.1)', display: 'flex', alignItems: 'center', justifyCenter: 'center', color: '#00f09a'}}>
-                        <i className="fas fa-check" />
-                      </div>
-                      <div style={{flex: 1}}>
-                        <p style={{fontSize: '12px', fontWeight: '800'}}>Main Portal</p>
-                        <p style={{fontSize: '10px', color: '#64748b'}}>Healthy</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                  ))}
+               </div>
+               <div style={{ height:'220px', width:'100%', background:'rgba(255,255,255,0.01)', border:'1px solid var(--border)', borderRadius:'16px', position:'relative', overflow:'hidden' }}>
+                  <svg viewBox="0 0 500 200" style={{ width:'100%', height:'100%', overflow:'visible' }}>
+                    <path d="M0,150 C50,140 100,50 150,110 S250,20 300,70 S400,0 500,40" fill="none" stroke="#00f09a" strokeWidth="3" />
+                  </svg>
+               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="footer">
-        <div className="container mx-auto px-6">
-          <div className="footer-logo">
-            <div className="logo-icon" style={{width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle', marginRight: '10px'}} />
-            UpGuard
-          </div>
-          <div className="footer-links">
-            <a href="#" className="footer-link">Privacy Policy</a>
-            <a href="#" className="footer-link">Terms of Service</a>
-            <a href="#" className="footer-link">Contact Us</a>
-            <a href="#" className="footer-link">Status Page</a>
-          </div>
-          <p className="copyright">© 2024 UpGuard Space • All systems operational</p>
+      {/* MARQUEE */}
+      <Marquee />
+
+      {/* FEATURES SECTION (RESTORED) */}
+      <section style={{ padding: '40px 0' }}>
+        <div style={{ textAlign:'center', marginBottom: '60px' }}>
+          <p style={{ color: '#00f09a', fontSize:'12px', fontWeight:'900', letterSpacing:'4px', textTransform:'uppercase', marginBottom:'16px' }}>Features</p>
+          <h2 style={{ fontFamily: 'Outfit', fontSize: '42px', fontWeight: '900' }}>Complete Infrastructure Visibility</h2>
         </div>
+
+        <div className="features-grid">
+          <div className="feature-item">
+            <div className="f-icon"><i className="fas fa-satellite-dish" /></div>
+            <h3 className="f-title">Multi-Region Checks</h3>
+            <p className="f-p">Monitor your servers from US East, Europe, or Asia. Detect regional failures before they impact global users.</p>
+          </div>
+          <div className="feature-item">
+            <div className="f-icon"><i className="fas fa-bell" /></div>
+            <h3 className="f-title">Smart Alerting</h3>
+            <p className="f-p">Instant notifications via Email, Discord, or Slack. Configure custom thresholds and escalation policies.</p>
+          </div>
+          <div className="feature-item">
+            <div className="f-icon"><i className="fas fa-chart-line" /></div>
+            <h3 className="f-title">Advanced Analytics</h3>
+            <p className="f-p">Track P99 latency, historical uptime, and performance trends over months. Export everything to CSV or PDF.</p>
+          </div>
+          <div className="feature-item">
+            <div className="f-icon"><i className="fas fa-shield-alt" /></div>
+            <h3 className="f-title">SSL Monitoring</h3>
+            <p className="f-p">Automatically track SSL certificate expiration and health. Get alerted 30, 15, and 7 days before expiry.</p>
+          </div>
+          <div className="feature-item">
+            <div className="f-icon"><i className="fas fa-tools" /></div>
+            <h3 className="f-title">Maintenance Windows</h3>
+            <p className="f-p">Schedule planned downtime to suppress alerts. Keep your uptime statistics clean and accurate.</p>
+          </div>
+          <div className="feature-item">
+            <div className="f-icon"><i className="fas fa-file-invoice" /></div>
+            <h3 className="f-title">Report Generation</h3>
+            <p className="f-p">Share professional status reports with stakeholders. Demonstrate your reliability with audit-ready data.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer-root">
+        <div className="footer-logo">
+           <div className="logo-box" style={{ display:'inline-flex', marginRight:'12px', verticalAlign:'middle' }}><i className="fas fa-shield-alt" /></div>
+           UpGuard
+        </div>
+        <div className="footer-links">
+          <a href="#" className="footer-link">Dashboard</a>
+          <a href="#" className="footer-link">Status Page</a>
+          <a href="#" className="footer-link">API Docs</a>
+          <a href="#" className="footer-link">Security Policies</a>
+          <a href="#" className="footer-link">Privacy</a>
+        </div>
+        <p className="footer-copy">© 2026 UpGuard Systems — Developed with ❤️ for Engineers</p>
       </footer>
     </div>
   );
