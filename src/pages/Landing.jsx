@@ -501,17 +501,21 @@ export function Landing() {
       </section>
 
       {/* ── STATS SECTION ── */}
-      <section className="py-32 md:py-52 bg-white/[0.01] border-y border-white/5 overflow-hidden">
-        <div className="max-w-[1500px] mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-24 text-center lg:text-left">
+      <section className="py-24 md:py-48 bg-white/[0.01] border-y border-white/5 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {[
             { n: "99.99%", l: "Target SLA" },
-            { n: "< 60s", l: "Heartbeat" },
+            { n: "60s", l: "Heartbeat" },
             { n: "Multi", l: "Cloud Edge" },
             { n: "Sub-S", l: "Alert Latency" }
           ].map((s, i) => (
-            <div key={i} className="relative group">
-              <div className="font-['Outfit'] font-black text-7xl md:text-9xl lg:text-[160px] mb-8 tracking-tighter text-white/95 group-hover:text-[#00f09a] transition-colors drop-shadow-[0_0_50px_rgba(255,255,255,0.05)]">{s.n}</div>
-              <div className="text-xs md:text-sm font-black uppercase text-slate-500 tracking-[0.5em] group-hover:text-[#00f09a] transition-colors">{s.l}</div>
+            <div key={i} className="flex flex-col items-center lg:items-start group">
+              <div className="font-['Outfit'] font-black text-6xl sm:text-7xl md:text-8xl xl:text-[110px] mb-4 tracking-tighter text-white/95 group-hover:text-[#00f09a] transition-colors drop-shadow-[0_0_50px_rgba(255,255,255,0.05)] leading-none">
+                {s.n}
+              </div>
+              <div className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.5em] group-hover:text-[#00f09a] transition-colors">
+                {s.l}
+              </div>
             </div>
           ))}
         </div>
