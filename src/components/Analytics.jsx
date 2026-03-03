@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
+import { api, API_BASE_URL } from '../services/api';
 import { Navbar } from './Navbar';
 import { LoadingSpinner } from './LoadingSpinner';
 import { toast } from 'react-hot-toast';
@@ -57,7 +57,10 @@ export const Analytics = () => {
   };
 
   const handleCopyScript = () => {
-    const script = `<script src="${window.location.protocol}//${window.location.hostname}:3005/tracker.js" data-site-id="${data.site_id}"></script>`;
+    // Extract base URL from API_BASE_URL (removing /api/v1 etc)
+    const baseUrl = API_BASE_URL ? API_BASE_URL.split('/api')[0] : `${window.location.protocol}//${window.location.hostname}:3005`;
+    const trackerUrl = `${baseUrl}/tracker.js`;
+    const script = `<script src="${trackerUrl}" data-site-id="${data.site_id}"></script>`;
     navigator.clipboard.writeText(script);
     setCopying(true);
     setTimeout(() => setCopying(false), 2000);
@@ -331,8 +334,8 @@ export const Analytics = () => {
             Paste this script tag into the <code className="text-[#00f09a]">&lt;head&gt;</code> of your website to start collecting data.
           </p>
           <div className="relative group">
-            <pre className="bg-black/50 border border-white/10 rounded-xl p-6 overflow-x-auto text-[#00f09a] text-sm font-mono">
-              {`<script src="${window.location.protocol}//${window.location.hostname}:3005/tracker.js" \n        data-site-id="${data.site_id}"></script>`}
+            <pre className="bg-black/50 border border-white/10 rounded-xl p-6 overflow-x-auto text-[#00f09a] text-sm font-mono leading-relaxed">
+              {`<script src="${API_BASE_URL ? API_BASE_URL.split('/api')[0] : `${window.location.protocol}//${window.location.hostname}:3005`}/tracker.js" \n        data-site-id="${data.site_id}"></script>`}
             </pre>
             <button
               onClick={handleCopyScript}
