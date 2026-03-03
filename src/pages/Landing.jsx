@@ -66,7 +66,7 @@ function BeamCanvas() {
       
       const op = Math.min(0.3, beam.opacity * (0.8 + Math.sin(beam.pulse) * 0.4));
       const grad = ctx.createLinearGradient(0, 0, 0, beam.length);
-      const color = "0, 240, 154";
+      const color = "0, 240, 154"; // Emerald
       grad.addColorStop(0, `rgba(${color}, 0)`);
       grad.addColorStop(0.5, `rgba(${color}, ${op})`);
       grad.addColorStop(1, `rgba(${color}, 0)`);
@@ -104,19 +104,14 @@ function BeamCanvas() {
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        position: "absolute",
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: "none",
-        willChange: "transform"
-      }}
+      className="absolute inset-0 z-0 pointer-events-none"
+      style={{ willChange: "transform" }}
     />
   );
 }
 
 // ═══════════════════════════════════
-// MARQUEE (left to right scolling)
+// MARQUEE (Left to Right)
 // ═══════════════════════════════════
 const techs = [
   "React", "Node.js", "Next.js", "Vue",
@@ -126,41 +121,20 @@ const techs = [
 
 function Marquee() {
   return (
-    <div style={{
-      overflow: "hidden",
-      borderTop: "1px solid rgba(255,255,255,0.06)",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      padding: "20px 0",
-      background: "rgba(255,255,255,0.01)"
-    }}>
+    <div className="overflow-hidden border-y border-white/5 py-4 lg:py-6 bg-white/[0.01]">
       <style>{`
-        @keyframes marqueeRev {
+        @keyframes marqueeScroll {
           0% { transform: translateX(-50%); }
           100% { transform: translateX(0); }
         }
       `}</style>
-      <div style={{
-        display: "flex",
-        animation: "marqueeRev 30s linear infinite",
-        width: "max-content"
-      }}>
+      <div 
+        className="flex whitespace-nowrap" 
+        style={{ animation: "marqueeScroll 35s linear infinite", width: "max-content" }}
+      >
         {techs.concat(techs).map((t, i) => (
-          <span key={i} style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "0 32px",
-            color: "#64748b",
-            fontSize: "14px",
-            fontWeight: "600",
-            whiteSpace: "nowrap"
-          }}>
-            <span style={{
-              width: "6px", height: "6px",
-              borderRadius: "50%",
-              background: "#00f09a",
-              boxShadow: "0 0 10px #00f09a"
-            }}/>
+          <span key={i} className="flex items-center gap-3 px-8 lg:px-12 text-slate-500 text-sm lg:text-base font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00f09a] shadow-[0_0_10px_#00f09a]" />
             {t}
           </span>
         ))}
@@ -175,436 +149,264 @@ export function Landing() {
 
   useEffect(() => {
     if (token) navigate("/dashboard");
-    document.title = "UpGuard — Premium Infrastructure Monitoring";
+    document.title = "UpGuard — Premium Uptime Monitoring";
   }, [token, navigate]);
 
   return (
-    <div className="landing-root">
+    <div className="min-h-screen bg-[#08080a] text-white font-['Inter',sans-serif] overflow-x-hidden selection:bg-[#00f09a]/20">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-        :root {
-          --primary: #00f09a;
-          --bg-dark: #050505;
-          --bg-card: #0b0b0d;
-          --border: rgba(255, 255, 255, 0.05);
-          --text-secondary: #94a3b8;
-        }
-
-        .landing-root {
-          background-color: var(--bg-dark);
-          color: white;
-          font-family: 'Inter', sans-serif;
-          min-height: 100vh;
-          overflow-x: hidden;
-          position: relative;
-        }
-
-        .hero-glow {
-          position: absolute;
-          top: 0; left: 0; right: 0; height: 100vh;
-          background: radial-gradient(circle at 50% -20%, rgba(0, 240, 154, 0.08) 0%, transparent 70%);
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        /* ── NAVBAR ── */
-        .nav-container {
-          position: fixed;
-          top: 0; left: 0; right: 0;
-          height: 80px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 5%;
-          z-index: 1000;
-          background: rgba(5, 5, 5, 0.85);
-          backdrop-filter: blur(20px);
-          border-bottom: 1px solid var(--border);
-        }
-
-        .nav-logo {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-family: 'Outfit';
-          font-weight: 800;
-          font-size: 24px;
-          color: white;
-          cursor: pointer;
-        }
-
-        .logo-box {
-          width: 28px; height: 28px;
-          background: var(--primary);
-          border-radius: 8px;
-          display: flex;
-          align-items: center; justify-content: center;
-          color: #050505;
-          font-size: 16px;
-        }
-
-        .nav-actions {
-          display: flex;
-          gap: 15px;
-        }
-
-        .btn-signin {
-          padding: 10px 24px;
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 12px;
-          font-weight: 600;
-          font-size: 14px;
-          color: white;
-          background: transparent;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .btn-signin:hover {
-          background: rgba(255,255,255,0.05);
-          border-color: rgba(255,255,255,0.3);
-        }
-
-        .btn-getstarted {
-          padding: 10px 24px;
-          background: var(--primary);
-          color: #050505;
-          border-radius: 12px;
-          font-weight: 800;
-          font-size: 14px;
-          border: none;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .btn-getstarted:hover {
-          background: #00cc82;
-          transform: translateY(-2px);
-          box-shadow: 0 10px 20px rgba(0, 240, 154, 0.2);
-        }
-
-        /* ── HERO ── */
-        .hero-section {
-          padding: 180px 20px 80px;
-          text-align: center;
-          max-width: 1200px;
-          margin: 0 auto;
-          position: relative;
-          z-index: 10;
-        }
-
+        
         .hero-h1 {
           font-family: 'Outfit';
-          font-size: clamp(40px, 8vw, 88px);
-          font-weight: 900;
           letter-spacing: -3px;
-          line-height: 1;
-          margin-bottom: 24px;
+          line-height: 0.95;
         }
-
-        .hero-h1 span {
-          background: linear-gradient(135deg, #00f09a, #06b6d4);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+        
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-
-        .hero-p {
-          color: var(--text-secondary);
-          font-size: 20px;
-          max-width: 650px;
-          margin: 0 auto 40px;
-          line-height: 1.6;
+        
+        .animate-fade-up {
+          animation: fadeInUp 0.8s ease forwards;
         }
-
-        /* ── MOCKUP ── */
-        .mockup-wrapper {
-          max-width: 950px;
-          margin: 60px auto 0;
-          position: relative;
-          perspective: 1000px;
-          padding: 0 20px;
-        }
-
-        .mockup-glow-line {
-          position: absolute;
-          top: -1px; left: 10%; right: 10%; height: 2px;
-          background: linear-gradient(90deg, transparent, var(--primary), transparent);
-          box-shadow: 0 0 20px var(--primary);
-          z-index: 20;
-          opacity: 0.8;
-        }
-
-        .mockup-container {
-          background: var(--bg-card);
-          border: 1px solid var(--border);
-          border-radius: 24px;
-          overflow: hidden;
-          box-shadow: 0 50px 100px rgba(0,0,0,0.6);
-          display: flex;
-          height: 500px;
-          text-align: left;
-        }
-
-        .mockup-side {
-          width: 200px;
-          background: #08080a;
-          border-right: 1px solid var(--border);
-          padding: 24px 16px;
-          display: none;
-        }
-
-        @media (min-width: 768px) { .mockup-side { display: block; } }
-
-        .mockup-main {
-          flex: 1;
-          padding: 24px;
-          background: var(--bg-card);
-        }
-
-        .mockup-stat-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 12px;
-          margin-bottom: 20px;
-        }
-
-        .mockup-stat-card {
-           background: rgba(255,255,255,0.02);
-           border: 1px solid var(--border);
-           border-radius: 12px;
-           padding: 16px;
-        }
-
-        /* ── FEATURE SECTIONS (RESTORED) ── */
-        .features-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 24px;
-          padding: 80px 5%;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        @media (min-width: 768px) {
-          .features-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        .feature-item {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid var(--border);
-          padding: 40px 32px;
-          border-radius: 24px;
-          transition: all 0.3s;
-        }
-
-        .feature-item:hover {
-          border-color: rgba(0, 240, 154, 0.4);
-          background: rgba(0, 240, 154, 0.03);
-          transform: translateY(-8px);
-        }
-
-        .f-icon {
-          width: 48px; height: 48px;
-          background: var(--primary);
-          border-radius: 12px;
-          display: flex;
-          align-items: center; justify-content: center;
-          color: #050505;
-          font-size: 20px;
-          margin-bottom: 24px;
-        }
-
-        .f-title {
-          font-family: 'Outfit';
-          font-size: 20px;
-          font-weight: 800;
-          margin-bottom: 12px;
-        }
-
-        .f-p {
-          color: var(--text-secondary);
-          font-size: 15px;
-          line-height: 1.6;
-        }
-
-        /* ── FOOTER ── */
-        .footer-root {
-          padding: 100px 5% 40px;
-          border-top: 1px solid var(--border);
-          margin-top: 100px;
-          text-align: center;
-        }
-
-        .footer-logo {
-          font-family: 'Outfit';
-          font-weight: 800;
-          font-size: 22px;
-          margin-bottom: 30px;
-          display: inline-block;
-        }
-
-        .footer-links {
-          display: flex;
-          justify-content: center;
-          gap: 40px;
-          margin-bottom: 40px;
-          flex-wrap: wrap;
-        }
-
-        .footer-link {
-          color: var(--text-secondary);
-          text-decoration: none;
-          font-size: 14px;
-          font-weight: 500;
-          transition: color 0.2s;
-        }
-
-        .footer-link:hover { color: white; }
-
-        .footer-copy {
-          color: #334155;
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-        }
-
-        .btn-xl {
-          padding: 16px 40px;
-          font-size: 16px;
-          font-weight: 800;
-          margin-top: 30px;
+        
+        .mockup-glow {
+          box-shadow: 0 0 100px -20px rgba(0, 240, 154, 0.15);
         }
       `}</style>
 
       <BeamCanvas />
-      <div className="hero-glow" />
-
-      {/* NAVBAR */}
-      <nav className="nav-container">
-        <div className="nav-logo" onClick={() => navigate("/")}>
-          <div className="logo-box"><i className="fas fa-shield-alt" /></div>
-          UpGuard
-        </div>
-        <div className="nav-actions">
-          <button className="btn-signin" onClick={() => navigate("/login")}>Login</button>
-          <button className="btn-getstarted" onClick={() => navigate("/register")}>Sign Up</button>
+      
+      {/* ── NAVBAR ── */}
+      <nav className="fixed top-0 inset-x-0 h-20 md:h-24 z-50 flex items-center justify-center pointer-events-none px-4">
+        <div className="w-full max-w-5xl h-14 md:h-16 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-between px-6 pointer-events-auto shadow-2xl">
+          <div 
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <div className="w-8 h-8 md:w-9 md:h-9 bg-[#00f09a] rounded-xl flex items-center justify-center text-[#050505] shadow-lg shadow-[#00f09a]/20 transition-transform group-hover:scale-105">
+              <i className="fas fa-shield-alt text-base md:text-lg" />
+            </div>
+            <span className="font-['Outfit'] font-black text-lg md:text-xl tracking-tight">UpGuard</span>
+          </div>
+          
+          <div className="flex items-center gap-2 md:gap-4">
+            <button 
+              onClick={() => navigate("/login")}
+              className="text-sm font-bold text-slate-400 hover:text-white transition-colors px-4 py-2"
+            >
+              Log in
+            </button>
+            <button 
+              onClick={() => navigate("/register")}
+              className="bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-5 md:px-7 py-2 md:py-2.5 rounded-full text-sm font-black transition-all hover:shadow-lg hover:shadow-[#00f09a]/30 active:scale-95 shadow-xl"
+            >
+              Register
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* HERO SECTION */}
-      <section className="hero-section">
-        <h1 className="hero-h1">
-          Infrastructure Intelligence<br/>
-          <span>Redefined.</span>
-        </h1>
-        <p className="hero-p">
-          Professional uptime monitoring, globally distributed checks, and 
-          instant alert dispatch — made for high-availability engineering teams.
-        </p>
+      {/* ── HERO ── */}
+      <section className="relative pt-44 pb-20 md:pt-60 md:pb-32 px-6 overflow-hidden">
+        {/* Top Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-[radial-gradient(circle_at_50%_-20%,rgba(0,240,154,0.12)_0%,transparent_70%)] pointer-events-none z-0" />
+        
+        <div className="max-w-6xl mx-auto text-center relative z-10 animate-fade-up">
+          <div className="inline-flex items-center gap-2 bg-[#00f09a]/10 border border-[#00f09a]/20 rounded-full px-4 py-1.5 mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00f09a] animate-pulse" />
+            <span className="text-[10px] md:text-xs font-black uppercase text-[#00f09a] tracking-widest">Global Infrastructure Watch</span>
+          </div>
 
-        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button className="btn-getstarted btn-xl" onClick={() => navigate("/register")}>
-            Start Monitoring Free
-          </button>
-          <button className="btn-signin btn-xl" onClick={() => navigate("/login")}>
-            View Dashboard →
-          </button>
+          <h1 className="hero-h1 text-6xl md:text-8xl lg:text-[110px] font-black text-white mb-8">
+            Infrastructure<br />
+            <span className="text-transparent bg-clip-text bg-[linear-gradient(135deg,#00f09a_0%,#06b6d4_50%,#00f09a_100%)]">Intelligence.</span>
+          </h1>
+          
+          <p className="max-w-xl mx-auto text-slate-400 text-lg md:text-xl leading-relaxed mb-12 font-medium">
+            Professional uptime monitoring, globally distributed checks, and 
+            instant alert dispatch — built for high-scale engineering teams.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6">
+            <button 
+              onClick={() => navigate("/register")}
+              className="w-full sm:w-auto bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-10 py-5 rounded-2xl text-lg font-black transition-all hover:shadow-2xl hover:shadow-[#00f09a]/30 active:scale-95 shadow-xl"
+            >
+              Start Monitoring Free
+            </button>
+            <button 
+              onClick={() => navigate("/login")}
+              className="w-full sm:w-auto group bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-10 py-5 rounded-2xl text-lg font-black transition-all flex items-center justify-center gap-3 backdrop-blur-sm shadow-xl"
+            >
+              Dashboard
+              <i className="fas fa-arrow-right text-sm text-[#00f09a] group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </div>
 
-        {/* MOCKUP */}
-        <div className="mockup-wrapper">
-          <div className="mockup-glow-line" />
-          <div className="mockup-container">
-            <div className="mockup-side">
-               <div style={{ marginBottom: '32px', fontWeight: '800', fontSize: '14px', color: '#00f09a' }}>🛡️ UpGuard App</div>
-               {[...Array(5)].map((_, i) => (
-                 <div key={i} style={{ height: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', marginBottom: '16px', width: (Math.random() * 40 + 60) + '%' }} />
-               ))}
-            </div>
-            <div className="mockup-main">
-               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'24px' }}>
-                  <div style={{ height:'20px', width:'150px', background:'rgba(255,255,255,0.08)', borderRadius:'6px' }} />
-                  <div style={{ height:'20px', width:'80px', background:'rgba(0, 240, 154, 0.15)', borderRadius:'6px' }} />
-               </div>
-               <div className="mockup-stat-grid">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="mockup-stat-card">
-                       <div style={{ height:'8px', width:'50%', background:'rgba(255,255,255,0.04)', borderRadius:'4px', marginBottom:'12px' }} />
-                       <div style={{ height:'24px', width:'80%', background:'rgba(255,255,255,0.08)', borderRadius:'4px' }} />
+        {/* ── MOCKUP ── */}
+        <div className="max-w-5xl mx-auto mt-24 md:mt-32 px-4 relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-[#00f09a]/40 to-[#06b6d4]/40 rounded-3xl blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity" />
+          <div className="relative bg-[#0b0b0d] border border-white/10 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl mockup-glow">
+            {/* Mockup Line Glow */}
+            <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#00f09a] to-transparent shadow-[0_0_20px_#00f09a] z-20" />
+            
+            <div className="flex flex-col md:flex-row h-[420px] md:h-[520px]">
+              {/* Sidebar */}
+              <div className="hidden md:block w-56 border-r border-white/5 bg-[#08080a] p-8">
+                <div className="flex items-center gap-3 mb-10">
+                  <div className="w-2.5 h-2.5 rounded bg-[#00f09a]" />
+                  <span className="text-[#00f09a] text-xs font-black tracking-widest uppercase">UpGuard</span>
+                </div>
+                {[1,2,3,4,5].map(i => (
+                  <div key={i} className={`h-2.5 rounded-full mb-6 ${i === 1 ? 'bg-[#00f09a]/20 w-3/4' : 'bg-white/5 w-1/2'}`} />
+                ))}
+              </div>
+              
+              {/* Content Area */}
+              <div className="flex-1 p-6 md:p-10">
+                <div className="flex justify-between mb-10">
+                  <div className="h-6 w-32 bg-white/5 rounded-lg" />
+                  <div className="h-6 w-20 bg-[#00f09a]/10 rounded-lg border border-[#00f09a]/20" />
+                </div>
+                <div className="grid grid-cols-3 gap-3 md:gap-6 mb-10">
+                  {[1,2,3].map(i => (
+                    <div key={i} className="bg-white/[0.02] border border-white/5 rounded-xl p-4 md:p-6">
+                      <div className="h-2 w-1/2 bg-white/10 rounded mb-4" />
+                      <div className="h-4 md:h-6 w-3/4 bg-white/20 rounded" />
                     </div>
                   ))}
-               </div>
-               <div style={{ height:'220px', width:'100%', background:'rgba(255,255,255,0.01)', border:'1px solid var(--border)', borderRadius:'16px', position:'relative', overflow:'hidden' }}>
-                  <svg viewBox="0 0 500 200" style={{ width:'100%', height:'100%', overflow:'visible' }}>
-                    <path d="M0,150 C50,140 100,50 150,110 S250,20 300,70 S400,0 500,40" fill="none" stroke="#00f09a" strokeWidth="3" />
+                </div>
+                <div className="relative h-44 md:h-56 bg-white/[0.01] border border-white/5 rounded-2xl overflow-hidden flex items-end px-4">
+                  <svg className="absolute inset-0 w-full h-full p-2" viewBox="0 0 500 200" preserveAspectRatio="none">
+                    <path d="M0,150 C50,140 100,60 150,120 S250,30 300,90 S400,10 500,50" fill="none" stroke="#00f09a" strokeWidth="3" strokeLinecap="round" />
+                    <path d="M0,150 C50,140 100,60 150,120 S250,30 300,90 S400,10 500,50 L500,200 L0,200 Z" fill="rgba(0, 240, 154, 0.05)" />
                   </svg>
-               </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* MARQUEE */}
+      {/* ── MARQUEE ── */}
       <Marquee />
 
-      {/* FEATURES SECTION (RESTORED) */}
-      <section style={{ padding: '40px 0' }}>
-        <div style={{ textAlign:'center', marginBottom: '60px' }}>
-          <p style={{ color: '#00f09a', fontSize:'12px', fontWeight:'900', letterSpacing:'4px', textTransform:'uppercase', marginBottom:'16px' }}>Features</p>
-          <h2 style={{ fontFamily: 'Outfit', fontSize: '42px', fontWeight: '900' }}>Complete Infrastructure Visibility</h2>
+      {/* ── FEATURES (Classic Content Restore) ── */}
+      <section className="py-24 md:py-40 px-6 max-w-7xl mx-auto">
+        <div className="text-center mb-20 md:mb-32">
+          <span className="text-[#00f09a] text-[10px] md:text-xs font-black uppercase tracking-[0.3em] mb-4 block">Unmatched Visibility</span>
+          <h2 className="hero-h1 text-4xl md:text-6xl font-black mb-6">Built for Industrial Scale</h2>
+          <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto font-medium">Everything you need to maintain 99.9% uptime and deliver a flawless user experience.</p>
         </div>
 
-        <div className="features-grid">
-          <div className="feature-item">
-            <div className="f-icon"><i className="fas fa-satellite-dish" /></div>
-            <h3 className="f-title">Multi-Region Checks</h3>
-            <p className="f-p">Monitor your servers from US East, Europe, or Asia. Detect regional failures before they impact global users.</p>
-          </div>
-          <div className="feature-item">
-            <div className="f-icon"><i className="fas fa-bell" /></div>
-            <h3 className="f-title">Smart Alerting</h3>
-            <p className="f-p">Instant notifications via Email, Discord, or Slack. Configure custom thresholds and escalation policies.</p>
-          </div>
-          <div className="feature-item">
-            <div className="f-icon"><i className="fas fa-chart-line" /></div>
-            <h3 className="f-title">Advanced Analytics</h3>
-            <p className="f-p">Track P99 latency, historical uptime, and performance trends over months. Export everything to CSV or PDF.</p>
-          </div>
-          <div className="feature-item">
-            <div className="f-icon"><i className="fas fa-shield-alt" /></div>
-            <h3 className="f-title">SSL Monitoring</h3>
-            <p className="f-p">Automatically track SSL certificate expiration and health. Get alerted 30, 15, and 7 days before expiry.</p>
-          </div>
-          <div className="feature-item">
-            <div className="f-icon"><i className="fas fa-tools" /></div>
-            <h3 className="f-title">Maintenance Windows</h3>
-            <p className="f-p">Schedule planned downtime to suppress alerts. Keep your uptime statistics clean and accurate.</p>
-          </div>
-          <div className="feature-item">
-            <div className="f-icon"><i className="fas fa-file-invoice" /></div>
-            <h3 className="f-title">Report Generation</h3>
-            <p className="f-p">Share professional status reports with stakeholders. Demonstrate your reliability with audit-ready data.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+          {[
+            { 
+              title: "Global Distribution", 
+              desc: "Monitor your infrastructure from US, Europe, and Asia. Detect regional routing failures instantly.", 
+              icon: "fa-globe-americas"
+            },
+            { 
+              title: "Smart Notifications", 
+              desc: "Connect seamlessly with Discord, Slack, and Email. Custom thresholds ensure no notification fatigue.", 
+              icon: "fa-bell"
+            },
+            { 
+              title: "Deep Diagnostics", 
+              desc: "Detailed error logs for every downtime. Understand exactly where certificates or DNS failed.", 
+              icon: "fa-vial"
+            },
+            { 
+              title: "SSL Tracking", 
+              desc: "Never let a certificate expire again. Automated tracking and alerting for all your HTTPS assets.", 
+              icon: "fa-lock"
+            },
+            { 
+              title: "Analytics Suite", 
+              desc: "Embedded tracking script captures page views, JS errors, and custom business events.", 
+              icon: "fa-chart-pie"
+            },
+            { 
+              title: "PDF Reporting", 
+              desc: "Share professional weekly and monthly uptime summaries with stakeholders and clients.", 
+              icon: "fa-file-invoice"
+            }
+          ].map((f, i) => (
+            <div key={i} className="group p-8 md:p-10 bg-white/[0.02] border border-white/5 rounded-[32px] hover:bg-white/[0.05] hover:border-[#00f09a]/20 transition-all duration-300">
+              <div className="w-14 h-14 bg-[#00f09a] rounded-2xl flex items-center justify-center text-[#050505] text-xl mb-8 group-hover:scale-110 transition-transform shadow-lg shadow-[#00f09a]/10">
+                <i className={`fas ${f.icon}`} />
+              </div>
+              <h3 className="font-['Outfit'] font-black text-xl mb-4 group-hover:text-[#00f09a] transition-colors">{f.title}</h3>
+              <p className="text-slate-400 text-base leading-relaxed font-medium">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── STATS SECTION (Classic) ── */}
+      <section className="py-20 bg-white/[0.01] border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-12 text-center lg:text-left">
+          {[
+            { n: "99.9%", l: "Target Uptime" },
+            { n: "60s", l: "Check Interval" },
+            { n: "∞", l: "Global Scale" },
+            { n: "0ms", l: "Alert Latency" }
+          ].map((s, i) => (
+            <div key={i}>
+              <div className="font-['Outfit'] font-black text-4xl md:text-5xl lg:text-6xl mb-2 tracking-tighter">{s.n}</div>
+              <div className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-widest">{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <section className="py-32 md:py-56 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,240,154,0.08)_0%,transparent_60%)] pointer-events-none" />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="hero-h1 text-5xl md:text-8xl font-black mb-2">Ready to monitor?</h2>
+          <p className="text-slate-400 text-lg md:text-xl font-medium mb-12">Join hundreds of engineers who trust UpGuard for their high-availability infrastructure.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button 
+              onClick={() => navigate("/register")}
+              className="w-full sm:w-auto bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-12 py-5 rounded-2xl text-lg font-black transition-all hover:shadow-2xl shadow-xl active:scale-95"
+            >
+              Start Free Trial
+            </button>
+            <button 
+              onClick={() => navigate("/login")}
+              className="w-full sm:w-auto bg-white/5 border border-white/10 hover:bg-white/10 px-12 py-5 rounded-2xl text-lg font-black transition-all backdrop-blur-xl shadow-xl"
+            >
+              Sign In
+            </button>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="footer-root">
-        <div className="footer-logo">
-           <div className="logo-box" style={{ display:'inline-flex', marginRight:'12px', verticalAlign:'middle' }}><i className="fas fa-shield-alt" /></div>
-           UpGuard
+      {/* ── FOOTER ── */}
+      <footer className="py-16 px-6 border-t border-white/5 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-10">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[#00f09a] rounded-lg flex items-center justify-center text-[#050505] shadow-lg shadow-[#00f09a]/20">
+              <i className="fas fa-shield-alt text-xs" />
+            </div>
+            <span className="font-['Outfit'] font-black text-xl tracking-tight">UpGuard</span>
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+            {["Terms", "Privacy", "Status", "Contact", "API"].map((l, i) => (
+              <a key={i} href="#" className="text-sm font-bold text-slate-500 hover:text-white transition-colors">{l}</a>
+            ))}
+          </div>
+          
+          <div className="text-slate-600 text-[10px] font-black uppercase tracking-[0.2em]">
+            © 2026 UpGuard Systems — Developed for Engineers
+          </div>
         </div>
-        <div className="footer-links">
-          <a href="#" className="footer-link">Dashboard</a>
-          <a href="#" className="footer-link">Status Page</a>
-          <a href="#" className="footer-link">API Docs</a>
-          <a href="#" className="footer-link">Security Policies</a>
-          <a href="#" className="footer-link">Privacy</a>
-        </div>
-        <p className="footer-copy">© 2026 UpGuard Systems — Developed with ❤️ for Engineers</p>
       </footer>
     </div>
   );
