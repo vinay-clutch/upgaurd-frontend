@@ -1,25 +1,26 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #000;
+  background-color: #050505;
   color: #fff;
+  font-family: 'Inter', sans-serif;
 }
 
-.status-up { color: #bc2c12; }
+.status-up { color: #00f09a; }
 .status-down { color: #ef4444; }
-.status-unknown { color: #1e293b; }
+.status-unknown { color: #6b7280; }
 
-.bg-status-up { background-color: #bc2c12; }
+.bg-status-up { background-color: #00f09a; }
 .bg-status-down { background-color: #ef4444; }
-.bg-status-unknown { background-color: #1e293b; }
+.bg-status-unknown { background-color: #6b7280; }
 
 .loading-spinner {
-  border: 2px solid rgba(255, 255, 255, 0.05);
-  border-top: 2px solid #bc2c12;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid #00f09a;
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -43,6 +44,21 @@ body {
 }
 
 ::selection {
-  background-color: rgba(188, 44, 18, 0.3);
+  background-color: rgba(0, 240, 154, 0.3);
   color: #fff;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2a2a;
 }
