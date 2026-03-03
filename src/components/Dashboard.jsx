@@ -104,7 +104,7 @@ export const Dashboard = () => {
   const stats = getStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-gradient-to-b from-[#08080a] via-[#0a0a0d] to-black text-white selection:bg-[#00f09a]/20">
       <Navbar />
 
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -124,8 +124,8 @@ export const Dashboard = () => {
               <p className="text-2xl font-bold text-rose-400">{stats.down}</p>
             </div>
             <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-indigo-500/80 text-xs font-bold uppercase tracking-widest mb-1">Avg Uptime</p>
-              <p className="text-2xl font-bold text-indigo-400">{stats.avgUptime}%</p>
+              <p className="text-[#00f09a]/80 text-xs font-bold uppercase tracking-widest mb-1">Avg Uptime</p>
+              <p className="text-2xl font-bold text-[#00f09a]">{stats.avgUptime}%</p>
             </div>
           </div>
         )}
@@ -140,7 +140,7 @@ export const Dashboard = () => {
                 onClick={() => setActiveFilter(tag)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
                   activeFilter === tag
-                    ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+                    ? 'bg-[#00f09a] border-[#00f09a] text-[#050505] shadow-lg shadow-[#00f09a]/10'
                     : 'bg-slate-900/40 border-white/5 text-slate-400 hover:text-white hover:bg-slate-800/40'
                 }`}
               >
@@ -171,7 +171,7 @@ export const Dashboard = () => {
           </div>
           <button 
             onClick={() => setShowAddModal(true)} 
-            className="group relative bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95"
+            className="group relative bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-6 py-2.5 rounded-xl text-sm font-bold transition-all hover:shadow-lg hover:shadow-[#00f09a]/20 active:scale-95"
           >
             <i className="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300" />
             Add Website
@@ -183,9 +183,9 @@ export const Dashboard = () => {
         ) : websites.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 bg-slate-900/20 border border-dashed border-white/10 rounded-3xl">
             <div className="relative mb-6">
-              <div className="absolute inset-0 bg-indigo-500/20 blur-3xl rounded-full" />
+              <div className="absolute inset-0 bg-[#00f09a]/10 blur-3xl rounded-full" />
               <div className="relative h-24 w-24 bg-slate-800 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
-                <i className="fas fa-rocket text-4xl text-indigo-400" />
+                <i className="fas fa-rocket text-4xl text-[#00f09a]" />
               </div>
             </div>
             <h3 className="text-xl font-bold mb-2">No websites monitored yet</h3>
@@ -205,7 +205,7 @@ export const Dashboard = () => {
               <div 
                 key={website.id}
                 onClick={() => navigate(`/website/${website.id}`)}
-                className="group relative bg-slate-900/40 border border-white/5 rounded-2xl p-6 cursor-pointer hover:bg-slate-800/40 hover:border-indigo-500/30 transition-all hover:shadow-2xl hover:shadow-indigo-500/5 backdrop-blur-sm"
+                className="group relative bg-slate-900/40 border border-white/5 rounded-2xl p-6 cursor-pointer hover:bg-slate-800/40 hover:border-[#00f09a]/30 transition-all hover:shadow-2xl hover:shadow-[#00f09a]/5 backdrop-blur-sm"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center space-x-3 overflow-hidden">
@@ -214,7 +214,7 @@ export const Dashboard = () => {
                       website.latest_status === 'Up' ? 'bg-emerald-400 shadow-emerald-500/40' : 
                       website.latest_status === 'Down' ? 'bg-rose-400 shadow-rose-500/40' : 'bg-slate-400'
                     }`} />
-                    <h3 className="font-bold text-white truncate text-sm group-hover:text-indigo-300 transition-colors" title={website.url}>
+                    <h3 className="font-bold text-white truncate text-sm group-hover:text-[#00f09a] transition-colors" title={website.url}>
                       {website.url.replace(/^https?:\/\//, '')}
                     </h3>
                   </div>
@@ -269,7 +269,7 @@ export const Dashboard = () => {
                     >
                       <i className="fas fa-file-export text-[10px]" />
                     </button>
-                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-indigo-400" />
+                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-[#00f09a]" />
                   </div>
                 </div>
               </div>

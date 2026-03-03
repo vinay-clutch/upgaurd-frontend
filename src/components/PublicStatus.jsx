@@ -58,9 +58,9 @@ export const PublicStatus = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#08080a] flex items-center justify-center">
         <div className="text-center">
-          <i className="fas fa-circle-notch fa-spin text-3xl text-indigo-400 mb-4" />
+          <i className="fas fa-circle-notch fa-spin text-3xl text-[#00f09a] mb-4" />
           <p className="text-slate-400 text-sm">Loading status...</p>
         </div>
       </div>
@@ -69,7 +69,7 @@ export const PublicStatus = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#08080a] flex items-center justify-center">
         <div className="text-center">
           <i className="fas fa-exclamation-circle text-4xl text-rose-400 mb-4" />
           <h2 className="text-xl font-bold text-white mb-2">Status Page Not Found</h2>
@@ -113,13 +113,13 @@ export const PublicStatus = () => {
   const checks = [...(data?.last_90_checks || [])].reverse();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[#08080a] text-white selection:bg-[#00f09a]/20">
       {/* Header */}
       <header className="border-b border-white/5">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-              <i className="fas fa-shield-alt text-indigo-400 text-sm" />
+            <div className="h-8 w-8 rounded-lg bg-[#00f09a]/10 border border-[#00f09a]/20 flex items-center justify-center">
+              <i className="fas fa-shield-alt text-[#00f09a] text-sm" />
             </div>
             <span className="text-sm font-bold text-slate-300 tracking-tight">UpGuard</span>
           </div>
@@ -158,7 +158,7 @@ export const PublicStatus = () => {
           </div>
           <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 text-center backdrop-blur-sm">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Avg Response</p>
-            <p className="text-3xl font-bold tracking-tight text-indigo-400">
+            <p className="text-3xl font-bold tracking-tight text-[#00f09a]">
               {data?.avg_response_ms}<span className="text-lg text-slate-500">ms</span>
             </p>
           </div>

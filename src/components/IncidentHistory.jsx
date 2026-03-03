@@ -42,7 +42,7 @@ export const IncidentHistory = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
+      <div className="min-h-screen bg-[#08080a] text-white">
         <Navbar />
         <div className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
           <LoadingSpinner />
@@ -53,7 +53,7 @@ export const IncidentHistory = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
+      <div className="min-h-screen bg-[#08080a] text-white">
         <Navbar />
         <div className="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)]">
           <i className="fas fa-exclamation-triangle text-4xl text-amber-400 mb-4" />
@@ -61,7 +61,7 @@ export const IncidentHistory = () => {
           <p className="text-slate-400 mb-4">{error}</p>
           <button
             onClick={() => navigate(-1)}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md text-sm font-medium"
+            className="bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-4 py-2 rounded-md text-sm font-bold"
           >
             Go Back
           </button>
@@ -71,7 +71,7 @@ export const IncidentHistory = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[#08080a] text-white selection:bg-[#00f09a]/20">
       <Navbar />
 
       <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -92,7 +92,7 @@ export const IncidentHistory = () => {
               <p className="text-slate-400 text-sm break-all">{data?.website_url}</p>
             </div>
             <div className="flex items-center">
-              <span className="bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 px-4 py-2 rounded-xl text-sm font-bold">
+              <span className="bg-[#00f09a]/10 border border-[#00f09a]/20 text-[#00f09a] px-4 py-2 rounded-xl text-sm font-bold">
                 {data?.total_incidents || 0} Incident{data?.total_incidents !== 1 ? 's' : ''}
               </span>
             </div>

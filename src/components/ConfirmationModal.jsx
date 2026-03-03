@@ -19,8 +19,8 @@ export const ConfirmationModal = ({
       case 'danger': return <Trash2 className="w-6 h-6 text-rose-500" />;
       case 'warning': return <AlertTriangle className="w-6 h-6 text-amber-500" />;
       case 'pause': return <Pause className="w-6 h-6 text-amber-500" />;
-      case 'resume': return <Play className="w-6 h-6 text-emerald-500" />;
-      default: return <AlertTriangle className="w-6 h-6 text-indigo-500" />;
+      case 'resume': return <Play className="w-6 h-6 text-[#00f09a]" />;
+      default: return <AlertTriangle className="w-6 h-6 text-[#00f09a]" />;
     }
   };
 
@@ -29,8 +29,8 @@ export const ConfirmationModal = ({
       case 'danger': return 'bg-rose-600 hover:bg-rose-500 shadow-rose-900/20';
       case 'warning':
       case 'pause': return 'bg-amber-600 hover:bg-amber-500 shadow-amber-900/20';
-      case 'resume': return 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/20';
-      default: return 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-900/20';
+      case 'resume': return 'bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] shadow-[#00f09a]/20';
+      default: return 'bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] shadow-[#00f09a]/20';
     }
   };
 
@@ -43,14 +43,14 @@ export const ConfirmationModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
           />
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-md bg-[#0a0a0d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
           >
             <div className="p-6">
               <div className="flex items-start gap-4">
@@ -95,7 +95,7 @@ export const ConfirmationModal = ({
             </div>
 
             {/* Subtle glow effect */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-30" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-[#00f09a] to-transparent opacity-30" />
           </motion.div>
         </div>
       )}

@@ -66,7 +66,7 @@ export const WebsiteDetails = () => {
       case 'Staging': return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
       case 'Client': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
       case 'Personal': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-      default: return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+      default: return 'bg-[#00f09a]/10 text-[#00f09a] border-[#00f09a]/20';
     }
   };
 
@@ -279,7 +279,7 @@ export const WebsiteDetails = () => {
             <p className="text-slate-400 mb-4">{error}</p>
             <Link 
               to="/dashboard"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md text-sm font-medium"
+              className="bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-4 py-2 rounded-md text-sm font-bold"
             >
               Back to Dashboard
             </Link>
@@ -301,7 +301,7 @@ export const WebsiteDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-gradient-to-b from-[#08080a] via-[#0a0a0d] to-black text-white selection:bg-[#00f09a]/20">
       <Navbar />
 
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -373,7 +373,7 @@ export const WebsiteDetails = () => {
               <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => navigate(`/websites/${id}/incidents`)}
-                  className="flex-1 sm:flex-none px-4 py-3 rounded-xl text-sm font-bold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all flex items-center justify-center shadow-lg shadow-indigo-500/5"
+                  className="flex-1 sm:flex-none px-4 py-3 rounded-xl text-sm font-bold bg-[#00f09a]/10 border border-[#00f09a]/20 text-[#00f09a] hover:bg-[#00f09a]/20 transition-all flex items-center justify-center shadow-lg shadow-[#00f09a]/5"
                 >
                   <i className="fas fa-clipboard-list mr-2" />
                   Incidents
@@ -555,8 +555,8 @@ export const WebsiteDetails = () => {
             {/* Monitoring Interval Card */}
             <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                  <i className="fas fa-clock text-indigo-400" />
+                <div className="h-10 w-10 rounded-xl bg-[#00f09a]/10 border border-[#00f09a]/20 flex items-center justify-center">
+                  <i className="fas fa-clock text-[#00f09a]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">Monitoring Frequency</h3>
@@ -581,7 +581,7 @@ export const WebsiteDetails = () => {
                     }}
                     className={`px-3 py-3 rounded-xl text-xs font-bold border transition-all ${
                       details?.check_interval === interval
-                        ? 'bg-indigo-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/20 scale-105'
+                        ? 'bg-[#00f09a] border-[#00f09a] text-[#050505] shadow-lg shadow-[#00f09a]/20 scale-105'
                         : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20'
                     }`}
                   >
@@ -595,8 +595,8 @@ export const WebsiteDetails = () => {
             <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                    <i className="fas fa-tags text-purple-400" />
+                  <div className="h-10 w-10 rounded-xl bg-[#00f09a]/10 border border-[#00f09a]/20 flex items-center justify-center">
+                    <i className="fas fa-tags text-[#00f09a]" />
                   </div>
                   <div>
                     <h3 className="font-bold text-sm">Tags & Categories</h3>
@@ -647,11 +647,11 @@ export const WebsiteDetails = () => {
                       value={customTag}
                       onChange={(e) => setCustomTag(e.target.value)}
                       placeholder="Add custom tag..."
-                      className="bg-slate-950 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 flex-1"
+                      className="bg-slate-950 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#00f09a] flex-1"
                     />
                     <button
                       type="submit"
-                      className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-1.5 rounded-lg transition-colors"
+                      className="bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] text-xs font-bold px-4 py-1.5 rounded-lg transition-colors"
                     >
                       Add
                     </button>
@@ -666,7 +666,7 @@ export const WebsiteDetails = () => {
                 <h3 className="font-bold text-lg">Performance Timeline</h3>
                 <div className="flex items-center text-xs text-slate-500">
                   <span className="flex items-center mr-4">
-                    <span className="h-2 w-2 rounded-full bg-indigo-500 mr-2" />
+                    <span className="h-2 w-2 rounded-full bg-[#00f09a] mr-2" />
                     Response Time (ms)
                   </span>
                 </div>
@@ -710,7 +710,7 @@ export const WebsiteDetails = () => {
                           setBadgeCopied(true);
                           setTimeout(() => setBadgeCopied(false), 2000);
                         }}
-                        className="text-indigo-400 hover:text-indigo-300 text-[10px] font-bold uppercase"
+                        className="text-[#00f09a] hover:text-[#00cc82] text-[10px] font-bold uppercase"
                       >
                         {badgeCopied ? 'Copied!' : 'Copy'}
                       </button>
@@ -727,8 +727,8 @@ export const WebsiteDetails = () => {
                     </code>
                   </div>
 
-                  <div className="bg-indigo-500/5 border border-indigo-500/10 rounded-xl p-4">
-                    <p className="text-[11px] text-indigo-300/80 leading-relaxed">
+                  <div className="bg-[#00f09a]/5 border border-[#00f09a]/10 rounded-xl p-4">
+                    <p className="text-[11px] text-[#00f09a]/80 leading-relaxed">
                       <i className="fas fa-info-circle mr-2" />
                       Paste this badge in your GitHub README.md or documentation to show off your reliability to users. The badge updates in real-time.
                     </p>
@@ -786,7 +786,7 @@ export const WebsiteDetails = () => {
                       <p className="text-slate-500 text-sm mb-4">No maintenance scheduled</p>
                       <button 
                         onClick={() => setShowMaintenanceForm(true)}
-                        className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold transition-all shadow-lg shadow-indigo-500/20"
+                        className="px-6 py-2.5 rounded-xl bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] text-sm font-bold transition-all shadow-lg shadow-[#00f09a]/20"
                       >
                         Schedule Maintenance
                       </button>

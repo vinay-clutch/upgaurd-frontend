@@ -124,8 +124,8 @@ export const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center group">
-              <i className="fas fa-heartbeat text-indigo-400 text-xl mr-2 group-hover:scale-110 transition-transform" />
-              <h1 className="text-xl font-semibold tracking-tight">UpGuard</h1>
+              <i className="fas fa-heartbeat text-[#00f09a] text-xl mr-2 group-hover:scale-110 transition-transform" />
+              <h1 className="text-xl font-bold tracking-tight text-white">UpGuard</h1>
             </Link>
           </div>
 
@@ -139,13 +139,13 @@ export const Navbar = () => {
                   <div className="flex items-center space-x-2 text-sm text-slate-300">
                     <span className="hidden sm:inline-block font-medium">{userProfile.username || userProfile.name}</span>
                     {userProfile.email && (
-                      <span className="text-slate-500 text-xs bg-indigo-500/10 px-2 py-0.5 rounded-full flex items-center">
+                      <span className="text-slate-500 text-xs bg-[#00f09a]/10 px-2 py-0.5 rounded-full flex items-center">
                         <i className="fas fa-bell text-[10px] mr-1" />
                         {userProfile.email}
                       </span>
                     )}
                   </div>
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-500/20">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#00f09a] to-emerald-600 flex items-center justify-center text-[#050505] font-bold text-sm shadow-lg shadow-[#00f09a]/20">
                     {getUserInitial()}
                   </div>
                 </button>
@@ -154,7 +154,7 @@ export const Navbar = () => {
                   <div className="absolute right-0 mt-3 w-72 rounded-xl border border-white/10 bg-slate-900 shadow-2xl animate-in fade-in zoom-in duration-200 overflow-hidden">
                     <div className="p-4 border-b border-white/10 bg-white/5">
                       <div className="flex items-center space-x-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#00f09a] to-emerald-600 flex items-center justify-center text-[#050505] font-bold">
                           {getUserInitial()}
                         </div>
                         <div className="overflow-hidden">
@@ -165,7 +165,7 @@ export const Navbar = () => {
                       <Link 
                         to="/profile" 
                         onClick={() => setShowDropdown(false)}
-                        className="mt-4 flex items-center space-x-2 text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                        className="mt-4 flex items-center space-x-2 text-xs text-[#00f09a] hover:text-[#00cc82] font-medium transition-colors"
                       >
                         <i className="fas fa-cog" />
                         <span>Account Settings</span>
@@ -182,13 +182,13 @@ export const Navbar = () => {
                             placeholder="New alert email..."
                             value={newEmail}
                             onChange={(e) => setNewEmail(e.target.value)}
-                            className="w-full bg-slate-950 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-indigo-500/50 transition-colors"
+                            className="w-full bg-slate-950 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-[#00f09a]/50 transition-colors"
                           />
                         </div>
                         <button
                           type="submit"
                           disabled={emailUpdateLoading || !newEmail}
-                          className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white py-2 rounded-lg text-xs font-semibold transition-all hover:shadow-lg hover:shadow-indigo-500/20"
+                          className="w-full bg-[#00f09a] hover:bg-[#00cc82] disabled:opacity-50 text-[#050505] py-2 rounded-lg text-xs font-bold transition-all hover:shadow-lg hover:shadow-[#00f09a]/20"
                         >
                           {emailUpdateLoading ? <i className="fas fa-spinner fa-spin" /> : 'Update Email'}
                         </button>

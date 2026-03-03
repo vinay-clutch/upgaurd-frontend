@@ -17,16 +17,16 @@ export const ResponseTimeChart = ({ data }) => {
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorConnection" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#00f09a" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#00f09a" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorTls" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorData" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ffc658" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#ffc658" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#22d3ee" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
@@ -45,7 +45,7 @@ export const ResponseTimeChart = ({ data }) => {
             type="monotone"
             dataKey="connection_time_ms"
             stackId="1"
-            stroke="#8884d8"
+            stroke="#00f09a"
             fillOpacity={1}
             fill="url(#colorConnection)"
             name="Connection"
@@ -54,7 +54,7 @@ export const ResponseTimeChart = ({ data }) => {
             type="monotone"
             dataKey="tls_handshake_time_ms"
             stackId="1"
-            stroke="#82ca9d"
+            stroke="#06b6d4"
             fillOpacity={1}
             fill="url(#colorTls)"
             name="TLS Handshake"
@@ -63,7 +63,7 @@ export const ResponseTimeChart = ({ data }) => {
             type="monotone"
             dataKey="data_transfer_time_ms"
             stackId="1"
-            stroke="#ffc658"
+            stroke="#22d3ee"
             fillOpacity={1}
             fill="url(#colorData)"
             name="Data Transfer"
