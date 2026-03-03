@@ -2,13 +2,12 @@ import { ResponsiveContainer, AreaChart, XAxis, YAxis, Tooltip, Area, CartesianG
 
 export const ResponseTimeChart = ({ data }) => {
   if (!data || data.length === 0) {
-    return <div className="text-center py-8 text-slate-400">No data available for chart.</div>;
+    return <div className="text-center py-12 text-slate-700 font-bold uppercase tracking-widest text-xs italic">No telemetry data available.</div>;
   }
-
 
   const chartData = data.map(tick => ({
     ...tick,
-    time: new Date(tick.timestamp).toLocaleTimeString(),
+    time: new Date(tick.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   })).reverse(); 
 
   return (
@@ -16,77 +15,62 @@ export const ResponseTimeChart = ({ data }) => {
       <ResponsiveContainer>
         <AreaChart data={chartData}>
           <defs>
-            <linearGradient id="colorConnection" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#bc2c12" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#bc2c12" stopOpacity={0}/>
+            <linearGradient id="colorMain" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#00f09a" stopOpacity={0.2}/>
+              <stop offset="95%" stopColor="#00f09a" stopOpacity={0}/>
             </linearGradient>
-            <linearGradient id="colorTls" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ea580c" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#ea580c" stopOpacity={0}/>
-            </linearGradient>
-            <linearGradient id="colorData" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f97316" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+            <linearGradient id="colorSec" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#64748b" stopOpacity={0.1}/>
+              <stop offset="95%" stopColor="#64748b" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.05)" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.03)" />
           <XAxis 
             dataKey="time" 
-            stroke="#475569" 
+            stroke="#334155" 
             fontSize={10} 
             tickLine={false}
             axisLine={false}
-            tick={{ fontWeight: 800, letterSpacing: '1px' }}
+            tick={{ fontWeight: 700, letterSpacing: '1px' }}
           />
           <YAxis 
-            stroke="#475569" 
+            stroke="#334155" 
             fontSize={10} 
             unit="ms" 
             tickLine={false}
             axisLine={false}
-            tick={{ fontWeight: 800 }}
+            tick={{ fontWeight: 700 }}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: '#0c0c0e',
+              backgroundColor: '#0b0b0d',
               borderColor: 'rgba(255, 255, 255, 0.05)',
               borderRadius: '16px',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-              padding: '12px'
+              padding: '12px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
             }}
-            itemStyle={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}
-            labelStyle={{ color: '#bc2c12', fontWeight: 900, marginBottom: '8px', fontSize: '10px' }}
+            itemStyle={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}
+            labelStyle={{ color: '#00f09a', fontWeight: 900, marginBottom: '8px', fontSize: '10px' }}
           />
 
           <Area
             type="monotone"
-            dataKey="connection_time_ms"
-            stackId="1"
-            stroke="#bc2c12"
+            dataKey="total_response_time_ms"
+            stroke="#00f09a"
             strokeWidth={3}
             fillOpacity={1}
-            fill="url(#colorConnection)"
-            name="NET CONNECT"
+            fill="url(#colorMain)"
+            name="RESPONSE TIME"
           />
           <Area
             type="monotone"
-            dataKey="tls_handshake_time_ms"
-            stackId="1"
-            stroke="#ea580c"
-            strokeWidth={3}
+            dataKey="connection_time_ms"
+            stroke="#64748b"
+            strokeWidth={1}
+            strokeDasharray="5 5"
             fillOpacity={1}
-            fill="url(#colorTls)"
-            name="TLS SECURE"
-          />
-           <Area
-            type="monotone"
-            dataKey="data_transfer_time_ms"
-            stackId="1"
-            stroke="#f97316"
-            strokeWidth={3}
-            fillOpacity={1}
-            fill="url(#colorData)"
-            name="TRANSFER"
+            fill="url(#colorSec)"
+            name="LATENCY"
           />
         </AreaChart>
       </ResponsiveContainer>
