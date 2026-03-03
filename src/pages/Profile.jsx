@@ -13,7 +13,7 @@ export const Profile = () => {
     const [activeTab, setActiveTab] = useState('account');
 
     useEffect(() => {
-        document.title = 'Security Profile | UpGuard';
+        document.title = 'Profile | UpGuard';
         if (userProfile) {
             setEmail(userProfile.email || '');
             setDiscordUrl(userProfile.discord_webhook || '');
@@ -26,10 +26,10 @@ export const Profile = () => {
         setLoading(true);
         try {
             await updateUserEmail(email);
-            toast.success('Signal protocols updated');
+            toast.success('Notification email updated!');
             await refreshProfile();
         } catch (error) {
-            toast.error(error.message || 'Transmission failed');
+            toast.error(error.message || 'Failed to update email');
         } finally {
             setLoading(false);
         }
@@ -41,14 +41,14 @@ export const Profile = () => {
         try {
             if (discordUrl) {
                 await api.updateDiscordWebhook(discordUrl);
-                toast.success('Discord channel linked');
+                toast.success('Discord webhook updated!');
             } else {
                 await api.removeDiscordWebhook();
-                toast.success('Discord channel severed');
+                toast.success('Discord webhook removed!');
             }
             await refreshProfile();
         } catch (error) {
-            toast.error(error.message || 'Operation failed');
+            toast.error(error.message || 'Failed to update Discord');
         } finally {
             setLoading(false);
         }
@@ -60,88 +60,84 @@ export const Profile = () => {
         try {
             if (slackUrl) {
                 await api.updateSlackWebhook(slackUrl);
-                toast.success('Slack relay active');
+                toast.success('Slack webhook updated!');
             } else {
                 await api.removeSlackWebhook();
-                toast.success('Slack relay offline');
+                toast.success('Slack webhook removed!');
             }
             await refreshProfile();
         } catch (error) {
-            toast.error(error.message || 'Operation failed');
+            toast.error(error.message || 'Failed to update Slack');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white selection:bg-[#00f09a]/20 font-['Inter']">
+        <div className="min-h-screen bg-[#0a0a0a] text-white">
             <Navbar />
             
-            <main className="max-w-6xl mx-auto py-32 px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col lg:flex-row gap-16">
+            <main className="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col lg:flex-row gap-12">
                     
                     {/* Sidebar */}
-                    <aside className="w-full lg:w-72 space-y-3">
-                        <div className="mb-10">
-                           <h1 className="text-3xl font-black tracking-tight mb-2 uppercase italic">Identity</h1>
-                           <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">Access & Signal Config</p>
-                        </div>
+                    <aside className="w-full lg:w-64 space-y-2">
                         <button 
                             onClick={() => setActiveTab('account')}
-                            className={`w-full flex items-center space-x-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'account' ? 'bg-[#00f09a] text-black shadow-2xl' : 'text-slate-500 hover:bg-white/5 hover:text-white'}`}
+                            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'account' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
                         >
-                            <i className="fas fa-fingerprint text-sm w-6" />
-                            <span>Primary Identity</span>
+                            <i className="fas fa-user-circle w-5" />
+                            <span>Account Details</span>
                         </button>
                         <button 
                             onClick={() => setActiveTab('notifications')}
-                            className={`w-full flex items-center space-x-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'notifications' ? 'bg-[#00f09a] text-black shadow-2xl' : 'text-slate-500 hover:bg-white/5 hover:text-white'}`}
+                            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'notifications' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
                         >
-                            <i className="fas fa-wave-square text-sm w-6" />
-                            <span>Signal Relays</span>
+                            <i className="fas fa-bell w-5" />
+                            <span>Notifications</span>
                         </button>
                     </aside>
 
                     {/* Content Area */}
-                    <div className="flex-1 space-y-12">
+                    <div className="flex-1 space-y-8">
                         
                         {activeTab === 'account' && (
                             <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <h2 className="text-xl font-black mb-8 italic uppercase tracking-widest">Account Topology</h2>
+                                <h2 className="text-2xl font-bold mb-6">Account Settings</h2>
                                 
-                                <div className="bg-[#0b0b0d] border border-white/5 rounded-[32px] p-10 shadow-2xl space-y-10">
-                                    <div className="flex items-center space-x-8">
-                                        <div className="h-24 w-24 rounded-3xl bg-black border border-white/5 flex items-center justify-center text-4xl font-black text-[#00f09a] shadow-2xl">
+                                <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-8 backdrop-blur-sm space-y-8">
+                                    <div className="flex items-center space-x-6">
+                                        <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-bold shadow-xl shadow-indigo-500/10">
                                             {userProfile?.username?.charAt(0).toUpperCase() || '?'}
                                         </div>
                                         <div>
-                                            <h3 className="text-2xl font-black text-white italic">{userProfile?.username.toUpperCase() || 'USER_UNK'}</h3>
-                                            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-[0.3em] mt-2">ID: {userProfile?.id?.substring(0, 12) || '...'}</p>
+                                            <h3 className="text-xl font-bold text-white">{userProfile?.username || 'User Profile'}</h3>
+                                            <p className="text-slate-400 text-sm">Account ID: {userProfile?.id || '...'}</p>
                                         </div>
                                     </div>
 
-                                    <div className="border-t border-white/5 pt-10">
-                                        <form onSubmit={handleUpdateEmail} className="max-w-md space-y-6">
+                                    <div className="border-t border-white/5 pt-8">
+                                        <form onSubmit={handleUpdateEmail} className="max-w-md space-y-4">
                                             <div>
-                                                <label className="block text-[10px] font-black text-slate-700 uppercase tracking-widest mb-3">Diagnostic Email</label>
-                                                <div className="relative group">
-                                                    <i className="fas fa-envelope-open absolute left-5 top-1/2 -translate-y-1/2 text-slate-800 group-focus-within:text-[#00f09a] transition-colors" />
+                                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Notification Email</label>
+                                                <div className="relative">
+                                                    <i className="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                                                     <input 
                                                         type="email"
                                                         value={email}
                                                         onChange={(e) => setEmail(e.target.value)}
-                                                        className="w-full bg-black border border-white/5 rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:outline-none focus:border-[#00f09a] transition-all"
-                                                        placeholder="Target address for reports..."
+                                                        className="w-full bg-slate-950 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-indigo-500 transition-all"
+                                                        placeholder="Enter alert email..."
                                                     />
                                                 </div>
-                                                <p className="mt-4 text-[10px] text-slate-700 font-bold uppercase tracking-widest leading-relaxed">System will route emergency telemetry and weekly analytical reports to this coordinate.</p>
+                                                <p className="mt-2 text-xs text-slate-500">We'll send incident alerts and weekly reports to this address.</p>
                                             </div>
                                             <button 
                                                 type="submit"
                                                 disabled={loading}
-                                                className="bg-[#0b0b0d] border border-white/5 hover:bg-[#00f09a] hover:text-black disabled:opacity-50 text-white font-black py-4 px-8 rounded-2xl text-[10px] uppercase tracking-widest transition-all shadow-2xl"
+                                                className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl text-sm transition-all hover:shadow-lg hover:shadow-indigo-500/20"
                                             >
-                                                {loading ? 'Transmitting...' : 'Link Coordinate'}
+                                                {loading ? 'Saving...' : 'Update Notification Email'}
                                             </button>
                                         </form>
                                     </div>
@@ -151,47 +147,47 @@ export const Profile = () => {
 
                         {activeTab === 'notifications' && (
                             <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <h2 className="text-xl font-black mb-8 italic uppercase tracking-widest">Signal Relays</h2>
+                                <h2 className="text-2xl font-bold mb-6">Integrations & Alerts</h2>
                                 
-                                <div className="space-y-8">
+                                <div className="space-y-6">
                                     {/* Discord */}
-                                    <div className="bg-[#0b0b0d] border border-white/5 rounded-[32px] p-10 shadow-2xl">
-                                        <div className="flex items-center space-x-6 mb-10">
-                                            <div className="h-14 w-14 rounded-2xl bg-[#5865F2]/5 border border-[#5865F2]/20 flex items-center justify-center">
+                                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-8 backdrop-blur-sm">
+                                        <div className="flex items-center space-x-4 mb-8">
+                                            <div className="h-12 w-12 rounded-xl bg-[#5865F2]/10 border border-[#5865F2]/20 flex items-center justify-center">
                                                 <i className="fab fa-discord text-[#5865F2] text-2xl" />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-black italic">Discord Synchronization</h3>
-                                                <p className="text-xs text-slate-600 font-bold uppercase tracking-widest">Instant Relay Protocol</p>
+                                                <h3 className="text-lg font-bold">Discord Notifications</h3>
+                                                <p className="text-sm text-slate-400">Receive instant alerts in your Discord channel.</p>
                                             </div>
                                         </div>
 
-                                        <form onSubmit={handleUpdateDiscord} className="space-y-6">
+                                        <form onSubmit={handleUpdateDiscord} className="space-y-4">
                                             <div>
-                                                <label className="block text-[10px] font-black text-slate-700 uppercase tracking-widest mb-3">Target Webhook</label>
+                                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Webhook URL</label>
                                                 <input 
                                                     type="url"
                                                     value={discordUrl}
                                                     onChange={(e) => setDiscordUrl(e.target.value)}
-                                                    className="w-full bg-black border border-white/5 rounded-2xl py-4 px-6 text-xs font-bold focus:outline-none focus:border-[#5865F2] transition-all"
+                                                    className="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-[#5865F2] transition-all"
                                                     placeholder="https://discord.com/api/webhooks/..."
                                                 />
                                             </div>
-                                            <div className="flex gap-4">
+                                            <div className="flex gap-3">
                                                 <button 
                                                     type="submit"
                                                     disabled={loading}
-                                                    className="bg-[#5865F2] hover:opacity-90 disabled:opacity-50 text-white font-black py-4 px-8 rounded-2xl text-[10px] uppercase tracking-widest transition-all shadow-xl"
+                                                    className="bg-[#5865F2] hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl text-sm transition-all shadow-lg shadow-[#5865F2]/10"
                                                 >
-                                                    {loading ? 'Authorizing...' : discordUrl ? 'Update Signal' : 'Initiate Relay'}
+                                                    {loading ? 'Saving...' : discordUrl ? 'Update Webhook' : 'Connect discord'}
                                                 </button>
                                                 {userProfile?.discord_webhook && (
                                                     <button 
                                                         type="button"
                                                         onClick={() => { setDiscordUrl(''); handleUpdateDiscord({ preventDefault: () => {} }); }}
-                                                        className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border border-rose-500/20 font-black py-4 px-8 rounded-2xl text-[10px] uppercase tracking-widest transition-all"
+                                                        className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold py-3 px-6 rounded-xl text-sm transition-all"
                                                     >
-                                                        Sever
+                                                        Remove
                                                     </button>
                                                 )}
                                             </div>
@@ -199,43 +195,43 @@ export const Profile = () => {
                                     </div>
 
                                     {/* Slack */}
-                                    <div className="bg-[#0b0b0d] border border-white/5 rounded-[32px] p-10 shadow-2xl">
-                                        <div className="flex items-center space-x-6 mb-10">
-                                            <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                                                <i className="fab fa-slack text-white text-2xl" />
+                                    <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-8 backdrop-blur-sm">
+                                        <div className="flex items-center space-x-4 mb-8">
+                                            <div className="h-12 w-12 rounded-xl bg-[#4A154B]/10 border border-[#4A154B]/20 flex items-center justify-center">
+                                                <i className="fab fa-slack text-[#4A154B] text-2xl" />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-black italic">Slack Integration</h3>
-                                                <p className="text-xs text-slate-600 font-bold uppercase tracking-widest">Workspace Broadcast Relay</p>
+                                                <h3 className="text-lg font-bold">Slack Notifications</h3>
+                                                <p className="text-sm text-slate-400">Connect your team workspace via incoming webhooks.</p>
                                             </div>
                                         </div>
 
-                                        <form onSubmit={handleUpdateSlack} className="space-y-6">
+                                        <form onSubmit={handleUpdateSlack} className="space-y-4">
                                             <div>
-                                                <label className="block text-[10px] font-black text-slate-700 uppercase tracking-widest mb-3">Service Webhook</label>
+                                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Webhook URL</label>
                                                 <input 
                                                     type="url"
                                                     value={slackUrl}
                                                     onChange={(e) => setSlackUrl(e.target.value)}
-                                                    className="w-full bg-black border border-white/5 rounded-2xl py-4 px-6 text-xs font-bold focus:outline-none focus:border-white/30 transition-all font-mono"
+                                                    className="w-full bg-slate-950 border border-white/10 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-[#4A154B] transition-all"
                                                     placeholder="https://hooks.slack.com/services/..."
                                                 />
                                             </div>
-                                            <div className="flex gap-4">
+                                            <div className="flex gap-3">
                                                 <button 
                                                     type="submit"
                                                     disabled={loading}
-                                                    className="bg-white text-black hover:bg-slate-200 disabled:opacity-50 font-black py-4 px-8 rounded-2xl text-[10px] uppercase tracking-widest transition-all shadow-xl"
+                                                    className="bg-[#4A154B] hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl text-sm transition-all shadow-lg shadow-[#4A154B]/10"
                                                 >
-                                                    {loading ? 'Processing...' : slackUrl ? 'Update Relay' : 'Enable Slack'}
+                                                    {loading ? 'Saving...' : slackUrl ? 'Update Webhook' : 'Connect Slack'}
                                                 </button>
                                                 {userProfile?.slack_webhook && (
                                                     <button 
                                                         type="button"
                                                         onClick={() => { setSlackUrl(''); handleUpdateSlack({ preventDefault: () => {} }); }}
-                                                        className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border border-rose-500/20 font-black py-4 px-8 rounded-2xl text-[10px] uppercase tracking-widest transition-all"
+                                                        className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold py-3 px-6 rounded-xl text-sm transition-all"
                                                     >
-                                                        Disconnect
+                                                        Remove
                                                     </button>
                                                 )}
                                             </div>
