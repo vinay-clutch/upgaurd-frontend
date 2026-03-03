@@ -70,7 +70,7 @@ function BeamCanvas() {
       // Use a fixed linear gradient to avoid creating it every frame if possible
       // or at least simplify the content inside save/restore
       const grad = ctx.createLinearGradient(0, 0, 0, beam.length);
-      const color = "139, 92, 246"; // Indigo-500
+      const color = "0, 240, 154"; // Emerald Green
       grad.addColorStop(0, `rgba(${color}, 0)`);
       grad.addColorStop(0.2, `rgba(${color}, ${op * 0.3})`);
       grad.addColorStop(0.5, `rgba(${color}, ${op})`);
@@ -174,7 +174,7 @@ function Marquee() {
             <span style={{
               width: "6px", height: "6px",
               borderRadius: "50%",
-              background: "#7c3aed"
+              background: "#00f09a"
             }}/>
             {t}
           </span>
@@ -198,7 +198,7 @@ export function Landing() {
 
   return (
     <div style={{
-      background: "#05050f",
+      background: "#08080a",
       color: "white",
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       overflowX: "hidden"
@@ -236,29 +236,30 @@ export function Landing() {
         }
 
         .btn-primary {
-          background: #7c3aed;
-          color: white;
+          background: #00f09a;
+          color: #050505;
           border: none;
           padding: 14px 28px;
-          border-radius: 10px;
+          border-radius: 12px;
           font-size: 15px;
-          font-weight: 600;
+          font-weight: 700;
           cursor: pointer;
           transition: all 0.2s;
           text-decoration: none;
           display: inline-block;
+          box-shadow: 0 10px 20px rgba(0, 240, 154, 0.15);
         }
         .btn-primary:hover {
-          background: #6d28d9;
+          background: #00cc82;
           transform: translateY(-2px);
-          box-shadow: 0 20px 40px rgba(124,58,237,0.35);
+          box-shadow: 0 15px 30px rgba(0, 240, 154, 0.3);
         }
         .btn-ghost {
-          background: rgba(255,255,255,0.05);
+          background: rgba(255,255,255,0.03);
           color: white;
-          border: 1px solid rgba(255,255,255,0.12);
+          border: 1px solid rgba(255,255,255,0.08);
           padding: 14px 28px;
-          border-radius: 10px;
+          border-radius: 12px;
           font-size: 15px;
           font-weight: 600;
           cursor: pointer;
@@ -267,22 +268,22 @@ export function Landing() {
           display: inline-block;
         }
         .btn-ghost:hover {
-          background: rgba(255,255,255,0.08);
-          border-color: rgba(255,255,255,0.25);
+          background: rgba(255,255,255,0.06);
+          border-color: rgba(255,255,255,0.2);
           transform: translateY(-2px);
         }
         .feature-card {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 20px;
+          background: rgba(255,255,255,0.01);
+          border: 1px solid rgba(255,255,255,0.05);
+          border-radius: 24px;
           padding: 32px;
           transition: all 0.3s;
         }
         .feature-card:hover {
-          border-color: rgba(124,58,237,0.35);
-          background: rgba(124,58,237,0.04);
+          border-color: rgba(0, 240, 154, 0.3);
+          background: rgba(0, 240, 154, 0.02);
           transform: translateY(-6px);
-          box-shadow: 0 24px 48px rgba(124,58,237,0.08);
+          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
         }
         .check-item {
           display: flex;
@@ -294,20 +295,20 @@ export function Landing() {
         }
         .check-item::before {
           content: "✓";
-          color: #7c3aed;
+          color: #00f09a;
           font-weight: 700;
           font-size: 16px;
           flex-shrink: 0;
         }
         .section-label {
           display: inline-block;
-          background: rgba(124,58,237,0.12);
-          border: 1px solid rgba(124,58,237,0.25);
-          color: #a78bfa;
-          padding: 5px 14px;
+          background: rgba(0, 240, 154, 0.1);
+          border: 1px solid rgba(0, 240, 154, 0.2);
+          color: #00f09a;
+          padding: 6px 16px;
           border-radius: 100px;
           font-size: 11px;
-          font-weight: 700;
+          font-weight: 800;
           letter-spacing: 2px;
           text-transform: uppercase;
           margin-bottom: 20px;
@@ -409,13 +410,13 @@ export function Landing() {
           pointerEvents: "none"
         }}/>
 
-        {/* Center purple glow */}
+        {/* Center Emerald glow */}
         <div style={{
           position: "absolute",
           top: "20%", left: "50%",
           transform: "translateX(-50%)",
           width: "700px", height: "700px",
-          background: "radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 65%)",
+          background: "radial-gradient(circle, rgba(0, 240, 154,0.12) 0%, transparent 65%)",
           pointerEvents: "none", zIndex: 1
         }}/>
 
@@ -431,16 +432,16 @@ export function Landing() {
           <div style={{
             display: "inline-flex",
             alignItems: "center", gap: "8px",
-            background: "rgba(124,58,237,0.1)",
-            border: "1px solid rgba(124,58,237,0.25)",
+            background: "rgba(0, 240, 154, 0.05)",
+            border: "1px solid rgba(0, 240, 154, 0.2)",
             borderRadius: "100px",
             padding: "8px 18px",
             marginBottom: "36px",
-            fontSize: "13px", color: "#a78bfa"
+            fontSize: "13px", color: "#00f09a"
           }}>
             <span style={{
               width: "7px", height: "7px",
-              background: "#7c3aed",
+              background: "#00f09a",
               borderRadius: "50%",
               display: "inline-block"
             }}/>
@@ -458,7 +459,7 @@ export function Landing() {
           }}>
             Prevent downtime.<br/>
             <span style={{
-              background: "linear-gradient(135deg, #7c3aed 0%, #06b6d4 50%, #a78bfa 100%)",
+              background: "linear-gradient(135deg, #00f09a 0%, #06b6d4 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text"
@@ -532,10 +533,10 @@ export function Landing() {
           <div style={{
             position: "absolute",
             inset: "-2px",
-            background: "linear-gradient(135deg,#7c3aed,#06b6d4,#7c3aed)",
+            background: "linear-gradient(135deg,#00f09a,#06b6d4,#00f09a)",
             borderRadius: "22px",
             filter: "blur(25px)",
-            opacity: 0.25,
+            opacity: 0.2,
             zIndex: -1
           }}/>
 
@@ -595,7 +596,7 @@ export function Landing() {
                     borderRadius: "8px",
                     color: i === 0 ? "white" : "#334155",
                     background: i === 0
-                      ? "rgba(124,58,237,0.2)"
+                      ? "rgba(0, 240, 154, 0.15)"
                       : "transparent",
                     fontSize: "13px",
                     marginBottom: "2px",
@@ -614,7 +615,7 @@ export function Landing() {
                   marginBottom:"16px"
                 }}>
                   {[
-                    {l:"Total Sites", v:"12", c:"#a78bfa"},
+                    {l:"Total Sites", v:"12", c:"#00f09a"},
                     {l:"Online", v:"11", c:"#22c55e"},
                     {l:"Avg Uptime", v:"99.9%", c:"#06b6d4"}
                   ].map((s,i) => (
@@ -663,10 +664,10 @@ export function Landing() {
                       <linearGradient id="g1"
                         x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%"
-                          stopColor="#7c3aed"
+                          stopColor="#00f09a"
                           stopOpacity="0.4"/>
                         <stop offset="100%"
-                          stopColor="#7c3aed"
+                          stopColor="#00f09a"
                           stopOpacity="0"/>
                       </linearGradient>
                     </defs>
@@ -683,7 +684,7 @@ export function Landing() {
                          S340,20 400,45
                          S470,65 500,35"
                       fill="none"
-                      stroke="#7c3aed"
+                      stroke="#00f09a"
                       strokeWidth="2.5"/>
                     <circle r="5" fill="#06b6d4">
                       <animateMotion dur="4s"
@@ -763,7 +764,7 @@ export function Landing() {
               fontWeight:"700", marginBottom:"4px"
             }}>mysite.com recovered</div>
             <div style={{
-              color:"#7c3aed", fontSize:"12px"
+              color:"#00f09a", fontSize:"12px"
             }}>2 seconds ago</div>
           </div>
         </div>
@@ -822,7 +823,7 @@ export function Landing() {
           <div className="check-item">5 Global regions</div>
           <div className="check-item">Response time analysis</div>
           <div className="check-item">Downtime diagnostics</div>
-          <div style={{ cursor: "pointer", color:"#7c3aed", fontSize:"15px", fontWeight:"600", marginTop:"12px" }}>Learn more →</div>
+          <div style={{ cursor: "pointer", color:"#00f09a", fontSize:"15px", fontWeight:"600", marginTop:"12px" }}>Learn more →</div>
         </div>
 
         {/* Site list mockup */}
@@ -911,7 +912,7 @@ export function Landing() {
                 height:`${h}%`,
                 background:`linear-gradient(
                   to top,
-                  #7c3aed,
+                  #00f09a,
                   #06b6d4
                 )`,
                 borderRadius:"4px 4px 0 0",
@@ -956,7 +957,7 @@ export function Landing() {
           }}>
             Metrics that matter.<br/>
             <span style={{
-              background:"linear-gradient(135deg,#7c3aed,#06b6d4)",
+              background:"linear-gradient(135deg,#00f09a,#06b6d4)",
               WebkitBackgroundClip:"text",
               WebkitTextFillColor:"transparent",
               backgroundClip:"text"
@@ -1083,9 +1084,9 @@ export function Landing() {
 
       {/* ── STATS ── */}
       <section style={{
-        background:"rgba(124,58,237,0.04)",
-        borderTop:"1px solid rgba(124,58,237,0.1)",
-        borderBottom:"1px solid rgba(124,58,237,0.1)",
+        background:"rgba(0, 240, 154, 0.03)",
+        borderTop:"1px solid rgba(0, 240, 154, 0.08)",
+        borderBottom:"1px solid rgba(0, 240, 154, 0.08)",
         padding:"80px 60px"
       }}>
         <div style={{
@@ -1105,7 +1106,7 @@ export function Landing() {
                 fontSize:"clamp(40px,5vw,64px)",
                 fontWeight:900,
                 letterSpacing:"-2px",
-                background:"linear-gradient(135deg,#fff,#a78bfa)",
+                background:"linear-gradient(135deg,#fff,#00f09a)",
                 WebkitBackgroundClip:"text",
                 WebkitTextFillColor:"transparent",
                 backgroundClip:"text",
@@ -1127,7 +1128,7 @@ export function Landing() {
       <section style={{
         padding:"160px 20px",
         textAlign:"center",
-        background:"radial-gradient(ellipse at center, rgba(124,58,237,0.15) 0%, transparent 65%)"
+        background:"radial-gradient(ellipse at center, rgba(0, 240, 154, 0.12) 0%, transparent 65%)"
       }}>
         <h2 style={{
           fontSize:"clamp(40px,6vw,72px)",

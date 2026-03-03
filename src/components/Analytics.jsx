@@ -64,7 +64,7 @@ export const Analytics = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-[#08080a] text-white">
       <Navbar />
       <div className="flex items-center justify-center h-[calc(100vh-64px)]">
         <LoadingSpinner />
@@ -73,12 +73,12 @@ export const Analytics = () => {
   );
 
   if (!data?.enabled) return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-[#08080a] text-white">
       <Navbar />
       <main className="max-w-4xl mx-auto py-20 px-4 text-center">
         <div className="bg-slate-900/50 border border-white/10 rounded-3xl p-12 backdrop-blur-xl">
-          <div className="h-20 w-20 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-indigo-500/20">
-            <i className="fas fa-chart-line text-3xl text-indigo-400" />
+          <div className="h-20 w-20 bg-[#00f09a]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#00f09a]/20">
+            <i className="fas fa-chart-line text-3xl text-[#00f09a]" />
           </div>
           <h1 className="text-3xl font-bold mb-4">Website Analytics</h1>
           <p className="text-slate-400 mb-8 max-w-md mx-auto">
@@ -87,8 +87,9 @@ export const Analytics = () => {
           <button
             onClick={handleEnable}
             disabled={enabling}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-50"
+            className="bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg shadow-[#00f09a]/10"
           >
+            {enabling ? <i className="fas fa-spinner fa-spin mr-2" /> : null}
             {enabling ? 'Enabling...' : 'Enable Analytics for this Website'}
           </button>
         </div>
@@ -97,7 +98,7 @@ export const Analytics = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white pb-20">
+    <div className="min-h-screen bg-[#08080a] text-white pb-20">
       <Navbar />
       
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -133,7 +134,7 @@ export const Analytics = () => {
             value={data.unique_sessions} 
             subtitle="Total active periods" 
             icon="fa-users" 
-            color="text-indigo-400" 
+            color="text-[#00f09a]" 
           />
           <StatCard 
             title="Avg Session" 
@@ -159,18 +160,18 @@ export const Analytics = () => {
               <AreaChart data={data.views_per_day}>
                 <defs>
                   <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#00f09a" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#00f09a" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                 <XAxis dataKey="label" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #ffffff10', borderRadius: '12px' }}
-                  itemStyle={{ color: '#818cf8' }}
+                  contentStyle={{ backgroundColor: '#0a0a0d', border: '1px solid #ffffff10', borderRadius: '12px' }}
+                  itemStyle={{ color: '#00f09a' }}
                 />
-                <Area type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" />
+                <Area type="monotone" dataKey="count" stroke="#00f09a" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -189,7 +190,7 @@ export const Analytics = () => {
                   </div>
                   <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-indigo-500 rounded-full transition-all duration-1000" 
+                      className="h-full bg-[#00f09a] rounded-full transition-all duration-1000" 
                       style={{ width: `${(p.count / (data.top_pages[0]?.count || 1)) * 100}%` }}
                     />
                   </div>
@@ -269,7 +270,7 @@ export const Analytics = () => {
                     </div>
                     <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-indigo-500 rounded-full transition-all duration-1000" 
+                        className="h-full bg-[#00f09a] rounded-full transition-all duration-1000" 
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -324,20 +325,20 @@ export const Analytics = () => {
         </div>
 
         {/* Tracker Code */}
-        <div className="bg-indigo-600/10 border border-indigo-500/20 rounded-2xl p-8 backdrop-blur-sm">
+        <div className="bg-[#00f09a]/10 border border-[#00f09a]/20 rounded-2xl p-8 backdrop-blur-sm">
           <h3 className="text-xl font-bold mb-2">Install Tracking</h3>
           <p className="text-slate-400 mb-6 text-sm">
-            Paste this script tag into the <code className="text-indigo-400">&lt;head&gt;</code> of your website to start collecting data.
+            Paste this script tag into the <code className="text-[#00f09a]">&lt;head&gt;</code> of your website to start collecting data.
           </p>
           <div className="relative group">
-            <pre className="bg-black/50 border border-white/10 rounded-xl p-6 overflow-x-auto text-indigo-300 text-sm font-mono">
+            <pre className="bg-black/50 border border-white/10 rounded-xl p-6 overflow-x-auto text-[#00f09a] text-sm font-mono">
               {`<script src="${window.location.protocol}//${window.location.hostname}:3005/tracker.js" \n        data-site-id="${data.site_id}"></script>`}
             </pre>
             <button
               onClick={handleCopyScript}
               className="absolute top-4 right-4 p-2 bg-slate-800 border border-white/10 rounded-lg hover:bg-slate-700 transition-all text-white text-xs font-bold"
             >
-              <i className={`fas ${copying ? 'fa-check text-emerald-400' : 'fa-copy'} mr-2`} />
+              <i className={`fas ${copying ? 'fa-check text-[#00f09a]' : 'fa-copy'} mr-2`} />
               {copying ? 'Copied!' : 'Copy Snippet'}
             </button>
           </div>

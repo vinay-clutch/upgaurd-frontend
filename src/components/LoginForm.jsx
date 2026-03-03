@@ -48,7 +48,7 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-black py-12 px-4 sm:px-6 lg:px-8 text-white">
+    <div className="min-h-screen flex items-center justify-center bg-[#08080a] py-12 px-4 sm:px-6 lg:px-8 text-white">
       <div className="max-w-md w-full space-y-8">
         <div>
           <Link to="/" className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-2 mb-8">
@@ -66,7 +66,7 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
         <div className="mt-6">
           <button
             onClick={handleGoogleAuth}
-            className="group relative w-full flex justify-center py-3 px-4 border border-white/20 text-sm font-medium rounded-md text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 transition-all duration-200"
+            className="group relative w-full flex justify-center py-3 px-4 border border-white/10 text-sm font-medium rounded-xl text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00f09a] focus:ring-offset-slate-950 transition-all duration-200"
           >
             <div className="flex items-center">
               <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -123,7 +123,7 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
                 name="username"
                 type="text"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-white/10 bg-white/5 placeholder-slate-400 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-xl relative block w-full px-3 py-3 border border-white/10 bg-white/5 placeholder-slate-500 text-white focus:outline-none focus:ring-[#00f09a] focus:border-[#00f09a] focus:z-10 sm:text-sm transition-all"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -139,7 +139,7 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
                   name="email"
                   type="email"
                   required
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-white/10 bg-white/5 placeholder-slate-400 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-xl relative block w-full px-3 py-3 border border-white/10 bg-white/5 placeholder-slate-500 text-white focus:outline-none focus:ring-[#00f09a] focus:border-[#00f09a] focus:z-10 sm:text-sm transition-all"
                   placeholder="Email (optional)"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -154,7 +154,7 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-white/10 bg-white/5 placeholder-slate-400 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-xl relative block w-full px-3 py-3 border border-white/10 bg-white/5 placeholder-slate-500 text-white focus:outline-none focus:ring-[#00f09a] focus:border-[#00f09a] focus:z-10 sm:text-sm transition-all"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -166,7 +166,7 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-[#050505] bg-[#00f09a] hover:bg-[#00cc82] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00f09a] focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-[#00f09a]/10"
             >
               {loading ? <LoadingSpinner /> : isLogin ? 'Sign In' : 'Sign Up'}
             </button>
@@ -175,7 +175,7 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
           <div className="text-center">
             <button
               type="button"
-              className="text-indigo-400 hover:text-indigo-300"
+              className="text-[#00f09a] hover:text-[#00cc82] font-medium text-sm transition-colors"
               onClick={() => {
                 setIsLogin(!isLogin);
                 setError('');
