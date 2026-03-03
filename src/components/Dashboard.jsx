@@ -2,191 +2,275 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
-import { Navbar } from './Navbar';
+import { LoadingSpinner } from './LoadingSpinner';
+import { DashboardSkeleton } from './Skeleton';
 import { AddWebsiteModal } from './AddWebsiteModal';
+import { Navbar } from './Navbar';
 import { getSocket } from '../services/socket';
 
 export const Dashboard = () => {
   const [websites, setWebsites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [isLive, setIsLive] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const { userProfile, updateUserEmail } = useAuth();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const [activeFilter, setActiveFilter] = useState('All');
 
-  const fetchWebsites = async () => {
+  const getTagColor = (tag) => {
+    switch (tag) {
+      case 'Production': return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+      case 'Staging': return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      case 'Client': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      case 'Personal': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+      default: return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+    }
+  };
+
+  const allTags = ['All', ...new Set(websites.flatMap(w => w.tags || []))];
+  const filteredWebsites = activeFilter === 'All' 
+    ? websites 
+    : websites.filter(w => (w.tags || []).includes(activeFilter));
+
+  const isMaintActive = (w) => w.maintenance_start && w.maintenance_end && 
+    new Date() >= new Date(w.maintenance_start) && 
+    new Date() <= new Date(w.maintenance_end);
+
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    document.title = 'Dashboard | UpGuard';
+    void loadWebsites();
+    // Poll every 30 seconds as backup
+    const interval = setInterval(loadWebsites, 30000);
+    
+    // WebSocket setup
+    const socket = getSocket();
+    
+    const handleTickUpdate = (data) => {
+      setWebsites(prev => prev.map(site => {
+        if (site.id === data.websiteId) {
+          return {
+            ...site,
+            latest_status: data.status,
+            last_response_ms: data.response_ms,
+            last_checked: data.timestamp
+          };
+        }
+        return site;
+      }));
+    };
+
+    socket.on('tick_update', handleTickUpdate);
+    socket.on('connect', () => setIsLive(true));
+    socket.on('disconnect', () => setIsLive(false));
+    setIsLive(socket.connected);
+
+    return () => {
+      clearInterval(interval);
+      socket.off('tick_update', handleTickUpdate);
+      socket.off('connect');
+      socket.off('disconnect');
+    };
+  }, []);
+
+  const loadWebsites = async () => {
     try {
-      const response = await api.getWebsites();
-      // Backend returns { websites: [], total: 0 }
-      const data = Array.isArray(response) ? response : (response?.websites || []);
-      setWebsites(data);
+      const data = await api.getWebsites();
+      setWebsites(data.websites || []);
     } catch (error) {
       console.error('Failed to load websites:', error);
-      setWebsites([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchWebsites();
-    const socket = getSocket();
-    socket.on('connect', () => setIsLive(true));
-    socket.on('disconnect', () => setIsLive(false));
-    socket.on('tick_update', fetchWebsites);
-
-    return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('tick_update');
-    };
-  }, []);
-
-  const handleAddWebsite = async (url) => {
-    try {
-      await api.addWebsite(url);
-      fetchWebsites();
-      setShowAddModal(false);
-    } catch (error) {
-      console.error('Failed to add website:', error);
-    }
+  const handleAddWebsite = () => {
+    void loadWebsites();
+    setShowAddModal(false);
   };
 
   const getStats = () => {
     const total = websites.length;
-    const up = websites.filter(w => !w.isPaused && w.latest_status === 'Up').length;
-    const down = websites.filter(w => !w.isPaused && w.latest_status === 'Down').length;
-    const avgUptime = websites.length > 0 
-      ? (websites.reduce((acc, curr) => acc + parseFloat(curr.uptime_percentage), 0) / total).toFixed(3)
-      : '100.000';
+    const up = websites.filter(w => w.latest_status === 'Up' && !w.isPaused).length;
+    const down = websites.filter(w => w.latest_status === 'Down' && !w.isPaused).length;
+    const avgUptime = websites.length > 0
+      ? (websites.reduce((acc, w) => acc + w.uptime_percentage, 0) / websites.length).toFixed(1)
+      : 0;
+    
     return { total, up, down, avgUptime };
   };
 
   const stats = getStats();
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#00f09a]/20 font-['Inter']">
+    <div className="min-h-screen bg-gradient-to-b from-[#08080a] via-[#0a0a0d] to-black text-white selection:bg-[#00f09a]/20">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto py-32 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Summary Bar */}
-        {!loading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-            {[
-              { l: 'TOTAL ASSETS', v: stats.total, c: 'text-white' },
-              { l: 'SYSTEMS ONLINE', v: stats.up, c: 'text-[#00f09a]' },
-              { l: 'SYSTEMS OFFLINE', v: stats.down, c: 'text-rose-500' },
-              { l: 'SIGNAL STABILITY', v: `${stats.avgUptime}%`, c: 'text-[#00f09a]' }
-            ].map((stat, i) => (
-              <div key={i} className="bg-[#0b0b0d] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#00f09a]/5 blur-3xl rounded-full -mr-16 -mt-16 transition-all group-hover:bg-[#00f09a]/10" />
-                <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest mb-3">{stat.l}</p>
-                <p className={`text-4xl font-black ${stat.c} tracking-tighter`}>{stat.v}</p>
-              </div>
+        {!loading && websites.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Total Assets</p>
+              <p className="text-2xl font-bold text-white">{stats.total}</p>
+            </div>
+            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
+              <p className="text-emerald-500/80 text-xs font-bold uppercase tracking-widest mb-1">Online</p>
+              <p className="text-2xl font-bold text-emerald-400">{stats.up}</p>
+            </div>
+            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
+              <p className="text-rose-500/80 text-xs font-bold uppercase tracking-widest mb-1">Offline</p>
+              <p className="text-2xl font-bold text-rose-400">{stats.down}</p>
+            </div>
+            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
+              <p className="text-[#00f09a]/80 text-xs font-bold uppercase tracking-widest mb-1">Avg Uptime</p>
+              <p className="text-2xl font-bold text-[#00f09a]">{stats.avgUptime}%</p>
+            </div>
+          </div>
+        )}
+
+        {/* Filters */}
+        {!loading && websites.length > 0 && allTags.length > 1 && (
+          <div className="flex flex-wrap gap-2 mb-8 items-center">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mr-2">Filter by tag:</span>
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setActiveFilter(tag)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+                  activeFilter === tag
+                    ? 'bg-[#00f09a] border-[#00f09a] text-[#050505] shadow-lg shadow-[#00f09a]/10'
+                    : 'bg-slate-900/40 border-white/5 text-slate-400 hover:text-white hover:bg-slate-800/40'
+                }`}
+              >
+                {tag}
+              </button>
             ))}
           </div>
         )}
 
         {/* Dashboard Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
-          <div className="flex items-center gap-6">
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-4">
             <div>
-              <h2 className="text-3xl font-black tracking-tight mb-2 uppercase italic">Global Monitoring</h2>
-              <p className="text-slate-500 text-sm font-medium">Real-time telemetry from multiple distributed regions</p>
+              <h2 className="text-2xl font-bold tracking-tight">Monitoring Dashboard</h2>
+              <p className="text-slate-400 text-sm">Real-time status of your connected infrastructure</p>
             </div>
             {isLive ? (
-              <span className="bg-[#00f09a]/10 text-[#00f09a] px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest border border-[#00f09a]/20 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-[#00f09a] rounded-full animate-pulse shadow-[0_0_8px_#00f09a]" />
-                LIVE STREAM
+              <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold border border-emerald-500/20 flex items-center gap-2 shadow-lg shadow-emerald-500/5">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                LIVE
               </span>
             ) : (
-              <span className="text-slate-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
                 <i className="fas fa-circle-notch fa-spin text-[8px]" />
-                Connecting
+                Connecting...
               </span>
             )}
           </div>
           <button 
             onClick={() => setShowAddModal(true)} 
-            className="w-full md:w-auto bg-[#00f09a] hover:bg-[#00cc82] text-black px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 shadow-[0_20px_40px_-10px_rgba(0,240,154,0.3)]"
+            className="group relative bg-[#00f09a] hover:bg-[#00cc82] text-[#050505] px-6 py-2.5 rounded-xl text-sm font-bold transition-all hover:shadow-lg hover:shadow-[#00f09a]/20 active:scale-95"
           >
-            <i className="fas fa-plus text-[10px]" />
-            New Monitor
+            <i className="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300" />
+            Add Website
           </button>
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-             {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-64 bg-white/5 rounded-3xl animate-pulse" />
-             ))}
-          </div>
+          <DashboardSkeleton />
         ) : websites.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 bg-[#0b0b0d] border border-white/5 rounded-[40px] shadow-2xl">
-            <div className="relative mb-8">
-              <div className="absolute inset-0 bg-[#00f09a]/10 blur-[80px] rounded-full" />
-              <div className="relative h-28 w-28 bg-black rounded-3xl flex items-center justify-center border border-white/10">
-                <i className="fas fa-satellite-dish text-4xl text-[#00f09a]" />
+          <div className="flex flex-col items-center justify-center py-20 bg-slate-900/20 border border-dashed border-white/10 rounded-3xl">
+            <div className="relative mb-6">
+              <div className="absolute inset-0 bg-[#00f09a]/10 blur-3xl rounded-full" />
+              <div className="relative h-24 w-24 bg-slate-800 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
+                <i className="fas fa-rocket text-4xl text-[#00f09a]" />
               </div>
             </div>
-            <h3 className="text-2xl font-black mb-3">System Ready</h3>
-            <p className="text-slate-500 mb-10 max-w-sm text-center text-sm font-medium leading-relaxed">
-              Enable your first monitoring node to start receiving real-time diagnostic data and global uptime alerts.
+            <h3 className="text-xl font-bold mb-2">No websites monitored yet</h3>
+            <p className="text-slate-400 mb-8 max-w-xs text-center text-sm">
+              Connect your first asset to start receiving real-time uptime alerts and performance insights.
             </p>
             <button 
               onClick={() => setShowAddModal(true)} 
-              className="bg-white text-black px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all shadow-xl"
+              className="bg-white text-slate-950 px-8 py-3 rounded-xl text-sm font-bold hover:bg-slate-200 transition-colors"
             >
-              Add Project
+              Add your first website
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {websites.map((website) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredWebsites.map((website) => (
               <div 
                 key={website.id}
                 onClick={() => navigate(`/website/${website.id}`)}
-                className="group relative bg-[#0b0b0d] border border-white/5 rounded-[32px] p-8 cursor-pointer hover:border-[#00f09a]/40 transition-all hover:shadow-2xl overflow-hidden"
+                className="group relative bg-slate-900/40 border border-white/5 rounded-2xl p-6 cursor-pointer hover:bg-slate-800/40 hover:border-[#00f09a]/30 transition-all hover:shadow-2xl hover:shadow-[#00f09a]/5 backdrop-blur-sm"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#00f09a]/2 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-[#00f09a]/5 transition-all" />
-                
-                <div className="flex justify-between items-start mb-8">
-                  <div className="flex items-center space-x-4 overflow-hidden">
-                    <div className={`h-2.5 w-2.5 rounded-full shrink-0 ${
-                      website.isPaused ? 'bg-slate-700' :
-                      website.latest_status === 'Up' ? 'bg-[#00f09a] shadow-[0_0_10px_#00f09a]' : 
-                      'bg-rose-500 animate-pulse shadow-[0_0_15px_#f43f5e]'
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center space-x-3 overflow-hidden">
+                    <div className={`h-3 w-3 rounded-full shrink-0 shadow-sm ${
+                      website.isPaused ? 'bg-slate-500' :
+                      website.latest_status === 'Up' ? 'bg-emerald-400 shadow-emerald-500/40' : 
+                      website.latest_status === 'Down' ? 'bg-rose-400 shadow-rose-500/40' : 'bg-slate-400'
                     }`} />
-                    <h3 className="font-bold text-white truncate text-base tracking-tight group-hover:text-[#00f09a] transition-colors" title={website.url}>
-                      {website.url.replace(/^https?:\/\//, '').toUpperCase()}
+                    <h3 className="font-bold text-white truncate text-sm group-hover:text-[#00f09a] transition-colors" title={website.url}>
+                      {website.url.replace(/^https?:\/\//, '')}
                     </h3>
                   </div>
-                  {website.isPaused && (
-                    <span className="text-[9px] uppercase font-bold text-slate-500 bg-white/5 px-2.5 py-1 rounded-md border border-white/5">
-                      PAUSED
+                  {isMaintActive(website) ? (
+                    <span className="text-[10px] uppercase font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 animate-pulse">
+                      <i className="fas fa-tools mr-1" /> Maint.
+                    </span>
+                  ) : website.isPaused && (
+                    <span className="text-[10px] uppercase font-bold text-slate-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
+                      Paused
                     </span>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="bg-black border border-white/5 rounded-2xl p-4 transition-colors group-hover:bg-white/5">
-                    <p className="text-[9px] text-slate-600 uppercase font-black tracking-widest mb-1.5">Latency</p>
-                    <p className="text-xl font-bold text-white tracking-tighter">
-                      {website.isPaused ? '--' : `${website.last_response_ms || 0} MS`}
+                {/* Tags Badge */}
+                {(website.tags || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-4 h-5 overflow-hidden">
+                    {website.tags.map(tag => (
+                      <span key={tag} className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${getTagColor(tag)}`}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-black/20 rounded-xl p-3 border border-white/5">
+                    <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Latency</p>
+                    <p className="text-lg font-bold text-slate-200">
+                      {website.isPaused ? '--' : `${website.last_response_ms || 0}ms`}
                     </p>
                   </div>
-                  <div className="bg-black border border-white/5 rounded-2xl p-4 transition-colors group-hover:bg-white/5">
-                    <p className="text-[9px] text-slate-600 uppercase font-black tracking-widest mb-1.5">Uptime</p>
-                    <p className="text-xl font-bold text-[#00f09a] tracking-tighter">{website.uptime_percentage}%</p>
+                  <div className="bg-black/20 rounded-xl p-3 border border-white/5">
+                    <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Uptime</p>
+                    <p className="text-lg font-bold text-slate-200">{website.uptime_percentage}%</p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[10px] text-slate-600 font-bold uppercase tracking-widest">
-                    <i className="far fa-clock text-[#00f09a] opacity-50" />
+                <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                  <div className="flex items-center">
+                    <i className="fas fa-clock mr-1.5 opacity-50" />
                     {website.last_checked ? new Date(website.last_checked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Never'}
                   </div>
-                  <i className="fas fa-chevron-right text-[10px] text-slate-800 group-hover:text-[#00f09a] group-hover:translate-x-1 transition-all" />
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        api.exportCsv(website.id, 7);
+                      }}
+                      title="Quick Export (Last 7 days)"
+                      className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-white/5"
+                    >
+                      <i className="fas fa-file-export text-[10px]" />
+                    </button>
+                    <i className="fas fa-arrow-right opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-[#00f09a]" />
+                  </div>
                 </div>
               </div>
             ))}
