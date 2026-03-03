@@ -166,8 +166,8 @@ function Marquee() {
             alignItems: "center",
             gap: "8px",
             padding: "0 32px",
-            color: "#475569",
-            fontSize: "14px",
+            color: "#64748b",
+            fontSize: "15px",
             fontWeight: "500",
             whiteSpace: "nowrap"
           }}>
@@ -450,11 +450,11 @@ export function Landing() {
 
           {/* Heading */}
           <h1 style={{
-            fontSize: "clamp(40px, 8vw, 96px)",
+            fontSize: "clamp(48px, 9vw, 104px)",
             fontWeight: 900,
-            lineHeight: 1.0,
-            letterSpacing: "-2px",
-            marginBottom: "24px",
+            lineHeight: 1.1,
+            letterSpacing: "-3px",
+            marginBottom: "32px",
             color: "white"
           }}>
             Prevent downtime.<br/>
@@ -462,7 +462,9 @@ export function Landing() {
               background: "linear-gradient(135deg, #00f09a 0%, #06b6d4 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              backgroundClip: "text"
+              backgroundClip: "text",
+              display: "inline-block",
+              marginTop: "8px"
             }}>
               Monitor everything.
             </span>
@@ -470,11 +472,12 @@ export function Landing() {
 
           {/* Subtitle */}
           <p style={{
-            fontSize: "19px",
-            color: "#64748b",
-            maxWidth: "520px",
-            margin: "0 auto 44px",
-            lineHeight: 1.7
+            fontSize: "20px",
+            color: "#94a3b8",
+            maxWidth: "640px",
+            margin: "0 auto 48px",
+            lineHeight: 1.6,
+            fontWeight: "400"
           }}>
             The all-in-one platform that watches your websites,
             tracks analytics, and catches errors —
@@ -565,7 +568,7 @@ export function Landing() {
                 borderRadius: "6px",
                 padding: "4px 14px",
                 fontSize: "12px",
-                color: "#334155",
+                color: "#94a3b8",
                 textAlign: "center"
               }}>
                 app.upguard.io/dashboard
@@ -583,7 +586,7 @@ export function Landing() {
                 flexShrink: 0
               }} className="hidden md:block">
                 <div style={{
-                  color:"#7c3aed", fontWeight:"800",
+                  color:"#00f09a", fontWeight:"800",
                   fontSize:"14px", marginBottom:"24px",
                   display:"flex", alignItems:"center", gap:"6px"
                 }}>
@@ -594,7 +597,7 @@ export function Landing() {
                   <div key={i} style={{
                     padding: "9px 12px",
                     borderRadius: "8px",
-                    color: i === 0 ? "white" : "#334155",
+                    color: i === 0 ? "white" : "#64748b",
                     background: i === 0
                       ? "rgba(0, 240, 154, 0.15)"
                       : "transparent",
@@ -626,7 +629,7 @@ export function Landing() {
                       padding:"12px 14px"
                     }}>
                       <div style={{
-                        color:"#334155", fontSize:"10px",
+                        color:"#64748b", fontSize:"10px",
                         marginBottom:"6px",
                         textTransform:"uppercase",
                         letterSpacing:"0.5px"
@@ -783,9 +786,9 @@ export function Landing() {
       <div style={{ padding:"16px 0" }}>
         <p style={{
           textAlign:"center",
-          color:"#334155",
+          color:"#64748b",
           fontSize:"12px",
-          fontWeight:"600",
+          fontWeight:"700",
           letterSpacing:"2px",
           textTransform:"uppercase",
           marginBottom:"16px"
@@ -812,8 +815,8 @@ export function Landing() {
             Know before<br/>your users do.
           </h2>
           <p style={{
-            color:"#64748b", fontSize:"16px",
-            lineHeight:1.7, marginBottom:"28px"
+            color:"#94a3b8", fontSize:"18px",
+            lineHeight:1.7, marginBottom:"32px"
           }}>
             UpGuard monitors your websites every 60 seconds
             from multiple regions. Get notified the second
@@ -870,11 +873,11 @@ export function Landing() {
                   fontWeight:"700", fontSize:"12px"
                 }}>{site.status}</span>
                 <span style={{
-                  color:"#334155", fontSize:"12px",
+                  color:"#64748b", fontSize:"12px",
                   minWidth:"55px", textAlign:"right"
                 }}>{site.ms}</span>
                 <span style={{
-                  color:"#475569", fontSize:"12px",
+                  color:"#64748b", fontSize:"12px",
                   minWidth:"42px", textAlign:"right"
                 }}>{site.uptime}</span>
               </div>
@@ -892,7 +895,7 @@ export function Landing() {
         {/* Analytics mockup */}
         <div className="mockup-card" style={{ padding:"24px" }}>
           <div style={{
-            color:"#334155", fontSize:"11px",
+            color:"#64748b", fontSize:"11px",
             textTransform:"uppercase",
             letterSpacing:"1px",
             marginBottom:"20px"
@@ -930,7 +933,7 @@ export function Landing() {
           }}>
             <div>
               <div style={{
-                color:"#334155", fontSize:"11px",
+                color:"#64748b", fontSize:"11px",
                 marginBottom:"4px"
               }}>Sessions today</div>
               <div style={{
@@ -964,8 +967,8 @@ export function Landing() {
             }}>Privacy focused.</span>
           </h2>
           <p style={{
-            color:"#64748b", fontSize:"16px",
-            lineHeight:1.7, marginBottom:"28px"
+            color:"#94a3b8", fontSize:"18px",
+            lineHeight:1.7, marginBottom:"32px"
           }}>
             Ditch Google Analytics. Track page views, sessions
             and traffic sources without cookies. 100% GDPR
@@ -997,8 +1000,8 @@ export function Landing() {
             Resolve downtime<br/>faster than ever.
           </h2>
           <p style={{
-            color:"#64748b", fontSize:"16px",
-            lineHeight:1.7, marginBottom:"28px"
+            color:"#94a3b8", fontSize:"18px",
+            lineHeight:1.7, marginBottom:"32px"
           }}>
             Get notified instantly via Email, Discord or Slack.
             Smart alerts prevent spam with intelligent
@@ -1033,10 +1036,10 @@ export function Landing() {
             },
             {
               icon:"📧", platform:"Email",
-              color:"#7c3aed",
+              color:"#0ea5e9",
               title:"⚠️ Slow Response Alert",
               msg:"api.mysite.com • 3200ms • 5 min ago",
-              bg:"rgba(124,58,237,0.08)"
+              bg:"rgba(14,165,233,0.08)"
             },
             {
               icon:"💼", platform:"Slack",
@@ -1113,9 +1116,9 @@ export function Landing() {
                 marginBottom:"8px"
               }}>{s.n}</div>
               <div style={{
-                color:"#334155",
+                color:"#64748b",
                 fontSize:"11px",
-                fontWeight:"700",
+                fontWeight:"800",
                 letterSpacing:"2px",
                 textTransform:"uppercase"
               }}>{s.l}</div>
@@ -1140,10 +1143,10 @@ export function Landing() {
           Downtime ends today.
         </h2>
         <p style={{
-          color:"#64748b",
-          fontSize:"18px",
-          maxWidth:"440px",
-          margin:"0 auto 44px",
+          color:"#94a3b8",
+          fontSize:"19px",
+          maxWidth:"500px",
+          margin:"0 auto 48px",
           lineHeight:1.7
         }}>
           Join 500+ developers who trust UpGuard to keep
@@ -1160,7 +1163,7 @@ export function Landing() {
           Get started for free
         </button>
         <div style={{
-          color:"#334155",
+          color:"#64748b",
           fontSize:"13px",
           marginTop:"16px"
         }}>
@@ -1193,10 +1196,10 @@ export function Landing() {
               🛡️ UpGuard
             </div>
             <p style={{
-              color:"#334155",
-              fontSize:"14px",
-              lineHeight:1.7,
-              maxWidth:"240px"
+              color:"#64748b",
+              fontSize:"15px",
+              lineHeight:1.8,
+              maxWidth:"280px"
             }}>
               Built for mission-critical engineering
               teams. The observability platform that
@@ -1222,19 +1225,19 @@ export function Landing() {
           ].map((col,i) => (
             <div key={i}>
               <div style={{
-                color:"#334155",
+                color:"#94a3b8",
                 fontSize:"11px",
-                fontWeight:"700",
+                fontWeight:"800",
                 letterSpacing:"2px",
                 textTransform:"uppercase",
                 marginBottom:"20px"
               }}>{col.title}</div>
-              {col.links.map((link,j) => (
+              {col.links.map((link, j) => (
                 <div key={j} style={{
-                  color:"#475569",
-                  fontSize:"14px",
-                  marginBottom:"10px",
-                  cursor:"pointer"
+                  color: "#64748b",
+                  fontSize: "14px",
+                  marginBottom: "10px",
+                  cursor: "pointer"
                 }}>{link}</div>
               ))}
             </div>
@@ -1250,13 +1253,13 @@ export function Landing() {
           flexWrap:"wrap", gap:"12px"
         }}>
           <span style={{
-            color:"#1e293b", fontSize:"13px"
+            color:"#475569", fontSize:"13px"
           }}>
             © 2026 UpGuard Technologies. 
             Built for the developer web.
           </span>
           <span style={{
-            color:"#1e293b", fontSize:"13px"
+            color:"#475569", fontSize:"13px"
           }}>
             Twitter • GitHub
           </span>

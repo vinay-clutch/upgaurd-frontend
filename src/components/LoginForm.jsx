@@ -9,6 +9,7 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState(''); 
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -25,6 +26,11 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
         const result = await login(username, password);
         if (!result.success) setError(result.error);
       } else {
+        if (!email) {
+          setError('Email is required for sign up');
+          setLoading(false);
+          return;
+        }
         const result = await signup(username, password, email);
         if (result.success) {
           setSuccess('Account created successfully! You can now sign in.');
@@ -133,32 +139,40 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
             {/* Email field for signup */}
             {!isLogin && (
               <div>
-                <label htmlFor="email" className="sr-only">Email</label>
+                <label htmlFor="email" className="sr-only">Email address</label>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   required
                   className="appearance-none rounded-xl relative block w-full px-3 py-3 border border-white/10 bg-white/5 placeholder-slate-500 text-white focus:outline-none focus:ring-[#00f09a] focus:border-[#00f09a] focus:z-10 sm:text-sm transition-all"
-                  placeholder="Email (optional)"
+                  placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             )}
 
-            <div>
+            <div className="relative">
               <label htmlFor="password" className="sr-only">Password</label>
               <input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
-                className="appearance-none rounded-xl relative block w-full px-3 py-3 border border-white/10 bg-white/5 placeholder-slate-500 text-white focus:outline-none focus:ring-[#00f09a] focus:border-[#00f09a] focus:z-10 sm:text-sm transition-all"
+                className="appearance-none rounded-xl relative block w-full px-3 py-3 border border-white/10 bg-white/5 placeholder-slate-500 text-white focus:outline-none focus:ring-[#00f09a] focus:border-[#00f09a] focus:z-10 sm:text-sm transition-all pr-12"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
+              </button>
             </div>
           </div>
 
