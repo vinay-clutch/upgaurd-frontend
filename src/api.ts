@@ -178,6 +178,26 @@ const exportCsv = async (websiteId, days = 30) => {
   URL.revokeObjectURL(url);
 };
 
+const updateProfile = (name, email) =>
+  request('/auth/update-profile', {
+    method: 'PUT',
+    body: JSON.stringify({ name, email }),
+  });
+
+const changePassword = (currentPassword, newPassword) =>
+  request('/auth/change-password', {
+    method: 'PUT',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+
+const deleteAccount = () =>
+  request('/auth/delete-account', {
+    method: 'DELETE',
+  });
+
+const getDashboardStats = () => request('/websites/stats/summary');
+const getGlobalPerformance = () => request('/websites/stats/performance');
+
 export const api = {
   request,
   signup,
@@ -186,8 +206,13 @@ export const api = {
   getWebsites,
   createWebsite,
   getWebsiteStatus,
+  getDashboardStats,
+  getGlobalPerformance,
   me,
   updateEmail,
+  updateProfile,
+  changePassword,
+  deleteAccount,
   pauseWebsite,
   resumeWebsite,
   deleteWebsite,

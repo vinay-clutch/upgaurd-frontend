@@ -7,42 +7,19 @@ import { DashboardSkeleton } from './Skeleton';
 import { AddWebsiteModal } from './AddWebsiteModal';
 import { Navbar } from './Navbar';
 import { getSocket } from '../services/socket';
+import { ResponsiveContainer, AreaChart, XAxis, YAxis, Tooltip, Area, CartesianGrid } from 'recharts';
 
 export const Dashboard = () => {
   const [websites, setWebsites] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const { userProfile, updateUserEmail } = useAuth();
-  const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState('All');
-
-  const getTagColor = (tag) => {
-    switch (tag) {
-      case 'Production': return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-      case 'Staging': return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-      case 'Client': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-      case 'Personal': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-      default: return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
-    }
-  };
-
-  const allTags = ['All', ...new Set(websites.flatMap(w => w.tags || []))];
-  const filteredWebsites = activeFilter === 'All' 
-    ? websites 
-    : websites.filter(w => (w.tags || []).includes(activeFilter));
-
-  const isMaintActive = (w) => w.maintenance_start && w.maintenance_end && 
-    new Date() >= new Date(w.maintenance_start) && 
-    new Date() <= new Date(w.maintenance_end);
-
-  const [isLive, setIsLive] = useState(false);
+  const [stats, setStats] = useState({ total_websites: 0, websites_up: 0, websites_down: 0, avg_uptime_percentage: 100, total_incidents_today: 0 });
+  const [performanceData, setPerformanceData] = useState([]);
 
   useEffect(() => {
     document.title = 'Dashboard | UpGuard';
-    void loadWebsites();
+    void loadData();
     // Poll every 30 seconds as backup
-    const interval = setInterval(loadWebsites, 30000);
+    const interval = setInterval(loadData, 30000);
     
     // WebSocket setup
     const socket = getSocket();
@@ -59,6 +36,8 @@ export const Dashboard = () => {
         }
         return site;
       }));
+      // Refresh stats on tick
+      void loadStats();
     };
 
     socket.on('tick_update', handleTickUpdate);
@@ -74,58 +53,135 @@ export const Dashboard = () => {
     };
   }, []);
 
+  const loadData = async () => {
+    setLoading(true);
+    await Promise.all([
+      loadWebsites(),
+      loadStats(),
+      loadPerformance()
+    ]);
+    setLoading(false);
+  };
+
   const loadWebsites = async () => {
     try {
       const data = await api.getWebsites();
       setWebsites(data.websites || []);
     } catch (error) {
       console.error('Failed to load websites:', error);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const data = await api.getDashboardStats();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  };
+
+  const loadPerformance = async () => {
+    try {
+      const data = await api.getGlobalPerformance();
+      setPerformanceData(data);
+    } catch (error) {
+      console.error('Failed to load performance data:', error);
     }
   };
 
   const handleAddWebsite = () => {
-    void loadWebsites();
+    void loadData();
     setShowAddModal(false);
   };
-
-  const getStats = () => {
-    const total = websites.length;
-    const up = websites.filter(w => w.latest_status === 'Up' && !w.isPaused).length;
-    const down = websites.filter(w => w.latest_status === 'Down' && !w.isPaused).length;
-    const avgUptime = websites.length > 0
-      ? (websites.reduce((acc, w) => acc + w.uptime_percentage, 0) / websites.length).toFixed(1)
-      : 0;
-    
-    return { total, up, down, avgUptime };
-  };
-
-  const stats = getStats();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#08080a] via-[#0a0a0d] to-black text-white selection:bg-[#00f09a]/20">
       <Navbar />
 
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {/* Summary Bar */}
-        {!loading && websites.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Total Assets</p>
-              <p className="text-2xl font-bold text-white">{stats.total}</p>
+        {/* Summary Cards */}
+        {!loading && (
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
+              <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Total Sites</p>
+              <p className="text-2xl font-black text-white">{stats.total_websites}</p>
             </div>
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-emerald-500/80 text-xs font-bold uppercase tracking-widest mb-1">Online</p>
-              <p className="text-2xl font-bold text-emerald-400">{stats.up}</p>
+            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
+              <p className="text-emerald-500/80 text-[10px] font-black uppercase tracking-widest mb-1">Online</p>
+              <p className="text-2xl font-black text-emerald-400">{stats.websites_up}</p>
             </div>
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-rose-500/80 text-xs font-bold uppercase tracking-widest mb-1">Offline</p>
-              <p className="text-2xl font-bold text-rose-400">{stats.down}</p>
+            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
+              <p className="text-rose-500/80 text-[10px] font-black uppercase tracking-widest mb-1">Offline</p>
+              <p className="text-2xl font-black text-rose-400">{stats.websites_down}</p>
             </div>
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
-              <p className="text-[#00f09a]/80 text-xs font-bold uppercase tracking-widest mb-1">Avg Uptime</p>
-              <p className="text-2xl font-bold text-[#00f09a]">{stats.avgUptime}%</p>
+            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 backdrop-blur-sm">
+              <p className="text-[#00f09a]/80 text-[10px] font-black uppercase tracking-widest mb-1">Avg Uptime</p>
+              <p className="text-2xl font-black text-[#00f09a]">{stats.avg_uptime_percentage}%</p>
+            </div>
+            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 backdrop-blur-sm col-span-2 lg:col-span-1">
+              <p className="text-amber-500/80 text-[10px] font-black uppercase tracking-widest mb-1">Incidents Today</p>
+              <p className="text-2xl font-black text-amber-400">{stats.total_incidents_today}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Global Performance Section */}
+        {!loading && performanceData.length > 0 && (
+          <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-8 mb-12 backdrop-blur-md">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-xl font-black flex items-center gap-3">
+                  <i className="fas fa-chart-line text-[#00f09a]" />
+                  Global Response Latency (24h)
+                </h3>
+                <p className="text-slate-500 text-xs mt-1 font-medium">Aggregated performance baseline across all monitored nodes.</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Avg Latency</p>
+                <p className="text-xl font-black text-white">
+                  {Math.round(performanceData.reduce((acc, curr) => acc + curr.avg_response_ms, 0) / performanceData.length)}ms
+                </p>
+              </div>
+            </div>
+            <div className="h-[200px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={performanceData}>
+                  <defs>
+                    <linearGradient id="globalLatency" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00f09a" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#00f09a" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                  <XAxis 
+                    dataKey="timestamp" 
+                    hide 
+                  />
+                  <YAxis 
+                    stroke="rgba(255,255,255,0.1)" 
+                    fontSize={10} 
+                    tickFormatter={(val) => `${val}ms`}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#08080a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '12px' }}
+                    itemStyle={{ color: '#00f09a' }}
+                    labelFormatter={(val) => new Date(val).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="avg_response_ms"
+                    stroke="#00f09a"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#globalLatency)"
+                    name="Latency"
+                    animationDuration={2000}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
         )}
