@@ -158,26 +158,40 @@ export const Analytics = () => {
         {/* Main Chart */}
         <div className="bg-slate-900/50 border border-white/10 rounded-2xl p-6 mb-8 backdrop-blur-sm">
           <h3 className="text-lg font-bold mb-6">Traffic Over Time</h3>
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.views_per_day}>
-                <defs>
-                  <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00f09a" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#00f09a" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                <XAxis dataKey="label" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#0a0a0d', border: '1px solid #ffffff10', borderRadius: '12px' }}
-                  itemStyle={{ color: '#00f09a' }}
-                />
-                <Area type="monotone" dataKey="count" stroke="#00f09a" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {(() => {
+            const hasValidViews = data.views_per_day && Array.isArray(data.views_per_day) && data.views_per_day.length > 0 && data.views_per_day.some(item => item && Object.keys(item).length > 0);
+            
+            if (!hasValidViews) {
+              return (
+                <div className="h-64 flex items-center justify-center text-slate-500 italic">
+                  Waiting for traffic data...
+                </div>
+              );
+            }
+
+            return (
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={data.views_per_day}>
+                    <defs>
+                      <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#00f09a" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#00f09a" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                    <XAxis dataKey="label" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0a0a0d', border: '1px solid #ffffff10', borderRadius: '12px' }}
+                      itemStyle={{ color: '#00f09a' }}
+                    />
+                    <Area type="monotone" dataKey="count" stroke="#00f09a" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" isAnimationActive={false} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            );
+          })()}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

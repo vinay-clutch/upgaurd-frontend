@@ -1,289 +1,151 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../services/api';
-
-const getRegionFlag = (regionName) => {
-  if (!regionName) return '🌍';
-  if (regionName.includes('Virginia') || regionName.includes('US East')) return '🇺🇸';
-  if (regionName.includes('Mumbai') || regionName.includes('ap-south')) return '🇮🇳';
-  if (regionName.includes('Singapore')) return '🇸🇬';
-  if (regionName.includes('Ireland')) return '🇮🇪';
-  if (regionName.includes('Frankfurt')) return '🇩🇪';
-  return '🌍';
-};
-
-const getRegionShortName = (regionName) => {
-  if (!regionName) return 'Unknown';
-  if (regionName.includes('Virginia') || regionName.includes('US East')) return 'US East';
-  if (regionName.includes('Mumbai')) return 'Mumbai';
-  if (regionName.includes('Singapore')) return 'Singapore';
-  if (regionName.includes('Ireland')) return 'Ireland';
-  if (regionName.includes('Frankfurt')) return 'Frankfurt';
-  return regionName;
-};
+import { LoadingSpinner } from './LoadingSpinner';
 
 export const PublicStatus = () => {
-  const { websiteId } = useParams();
+  const { username } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [hoveredCheck, setHoveredCheck] = useState(null);
 
   useEffect(() => {
-    if (websiteId) loadStatus();
-  }, [websiteId]);
+    document.title = `${username}'s Status | UpGuard`;
+    loadStatus();
+    const interval = setInterval(loadStatus, 60000);
+    return () => clearInterval(interval);
+  }, [username]);
 
   const loadStatus = async () => {
     try {
-      const result = await api.getPublicStatus(websiteId);
+      const result = await api.getPublicStatusByUsername(username);
       setData(result);
+      setError('');
     } catch (err) {
-      setError(err.message || 'Failed to load status');
+      setError('Status page not found or private.');
     } finally {
       setLoading(false);
     }
   };
 
-  const timeAgo = (dateStr) => {
-    if (!dateStr) return 'Never';
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const minutes = Math.floor(diff / 60000);
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-    const days = Math.floor(hours / 24);
-    return `${days} day${days !== 1 ? 's' : ''} ago`;
-  };
+  if (loading) return (
+    <div className="min-h-screen bg-[#08080a] flex items-center justify-center">
+      <LoadingSpinner />
+    </div>
+  );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#08080a] flex items-center justify-center">
-        <div className="text-center">
-          <i className="fas fa-circle-notch fa-spin text-3xl text-[#00f09a] mb-4" />
-          <p className="text-slate-400 text-sm">Loading status...</p>
-        </div>
+  if (error) return (
+    <div className="min-h-screen bg-[#08080a] text-white flex flex-col items-center justify-center p-4">
+      <div className="w-20 h-20 bg-rose-500/10 rounded-3xl flex items-center justify-center border border-rose-500/20 mb-6">
+        <i className="fas fa-ghost text-4xl text-rose-500" />
       </div>
-    );
-  }
+      <h1 className="text-2xl font-black mb-2">404 - Not Found</h1>
+      <p className="text-slate-400">{error}</p>
+    </div>
+  );
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#08080a] flex items-center justify-center">
-        <div className="text-center">
-          <i className="fas fa-exclamation-circle text-4xl text-rose-400 mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Status Page Not Found</h2>
-          <p className="text-slate-400 text-sm">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  const statusConfig = {
-    Up: {
-      icon: 'fa-check-circle',
-      label: 'All Systems Operational',
-      color: 'text-emerald-400',
-      bg: 'bg-emerald-500/10',
-      border: 'border-emerald-500/20',
-      glow: 'shadow-emerald-500/20',
-      dot: 'bg-emerald-400',
-    },
-    Down: {
-      icon: 'fa-times-circle',
-      label: 'Service Disruption',
-      color: 'text-rose-400',
-      bg: 'bg-rose-500/10',
-      border: 'border-rose-500/20',
-      glow: 'shadow-rose-500/20',
-      dot: 'bg-rose-400',
-    },
-    Unknown: {
-      icon: 'fa-question-circle',
-      label: 'Checking...',
-      color: 'text-slate-400',
-      bg: 'bg-slate-500/10',
-      border: 'border-slate-500/20',
-      glow: 'shadow-slate-500/20',
-      dot: 'bg-slate-400',
-    },
-  };
-
-  const status = statusConfig[data?.current_status] || statusConfig.Unknown;
-  const checks = [...(data?.last_90_checks || [])].reverse();
+  const overallHealth = data.websites.every(w => w.status === 'Up' || w.status === 'Paused');
 
   return (
-    <div className="min-h-screen bg-[#08080a] text-white selection:bg-[#00f09a]/20">
-      {/* Header */}
-      <header className="border-b border-white/5">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#08080a] text-white selection:bg-[#00f09a]/20 font-sans">
+      {/* Branding Header */}
+      <div className="border-b border-white/5 bg-white/[0.02] backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 bg-[#00f09a] rounded-lg flex items-center justify-center text-black font-black italic shadow-lg shadow-[#00f09a]/20">U</div>
+            <span className="font-black tracking-tighter text-xl">UPGUARD <span className="text-slate-500 font-medium text-sm">/ {username}</span></span>
+          </div>
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-[#00f09a]/10 border border-[#00f09a]/20 flex items-center justify-center">
-              <i className="fas fa-shield-alt text-[#00f09a] text-sm" />
+             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/5 py-1 px-3 rounded-full border border-white/10">Public Status Page</span>
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-5xl mx-auto px-6 py-12">
+        {/* Core Status Block */}
+        <div className={`rounded-[40px] p-10 mb-12 border transition-all duration-700 ${
+          overallHealth 
+          ? 'bg-emerald-500/5 border-emerald-500/10 shadow-[0_0_50px_rgba(16,185,129,0.05)]' 
+          : 'bg-rose-500/5 border-rose-500/10 shadow-[0_0_50px_rgba(244,63,94,0.05)]'
+        }`}>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-8">
+              <div className={`h-24 w-24 rounded-[32px] flex items-center justify-center text-4xl shadow-2xl ${
+                overallHealth ? 'bg-emerald-500 text-black shadow-emerald-500/20' : 'bg-rose-500 text-white shadow-rose-500/20'
+              }`}>
+                <i className={`fas ${overallHealth ? 'fa-check' : 'fa-exclamation-triangle'}`} />
+              </div>
+              <div>
+                <h1 className="text-4xl font-black mb-2 tracking-tight">
+                  {overallHealth ? 'All Systems Operational' : 'Partial Service Disruption'}
+                </h1>
+                <p className="text-slate-400 font-medium">Verified health metrics for {data.websites.length} connected services.</p>
+              </div>
             </div>
-            <span className="text-sm font-bold text-slate-300 tracking-tight">UpGuard</span>
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Status Page</span>
-        </div>
-      </header>
-
-      <main className="max-w-3xl mx-auto px-4 py-12">
-        {/* Website URL */}
-        <p className="text-slate-500 text-sm font-medium text-center mb-2 break-all">{data?.url}</p>
-
-        {/* Big Status Badge */}
-        <div className={`${status.bg} border ${status.border} rounded-3xl p-8 text-center mb-10 shadow-2xl ${status.glow}`}>
-          <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full ${status.bg} border ${status.border} mb-5`}>
-            <i className={`fas ${status.icon} text-4xl ${status.color}`} />
-          </div>
-          <h1 className={`text-3xl font-bold tracking-tight mb-2 ${status.color}`}>
-            {status.label}
-          </h1>
-          <p className="text-slate-500 text-sm">
-            Last checked {timeAgo(data?.last_checked)}
-          </p>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-10">
-          <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 text-center backdrop-blur-sm">
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Uptime</p>
-            <p className={`text-3xl font-bold tracking-tight ${
-              data?.uptime_percentage >= 99 ? 'text-emerald-400' :
-              data?.uptime_percentage >= 95 ? 'text-amber-400' :
-              'text-rose-400'
-            }`}>
-              {data?.uptime_percentage}%
-            </p>
-          </div>
-          <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 text-center backdrop-blur-sm">
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Avg Response</p>
-            <p className="text-3xl font-bold tracking-tight text-[#00f09a]">
-              {data?.avg_response_ms}<span className="text-lg text-slate-500">ms</span>
-            </p>
-          </div>
-          <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 text-center backdrop-blur-sm">
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Last Check</p>
-            <p className="text-sm font-bold text-white leading-relaxed">
-              {timeAgo(data?.last_checked)}
-            </p>
           </div>
         </div>
 
-        {/* Region Breakdown */}
-        {(() => {
-          const regionMap = {};
-          for (const check of data?.last_90_checks || []) {
-            if (!regionMap[check.region]) {
-              regionMap[check.region] = { latest_status: check.status, latest_ms: check.response_ms, count: 0, upCount: 0 };
-            }
-            regionMap[check.region].count++;
-            if (check.status === 'Up') regionMap[check.region].upCount++;
-          }
-          const regions = Object.entries(regionMap);
-          if (regions.length <= 1) return null;
-          return (
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-6 backdrop-blur-sm mb-10">
-              <h2 className="font-bold text-sm mb-4">Monitoring Regions</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {regions.map(([name, info]) => (
-                  <div key={name} className="bg-slate-800/50 border border-white/5 rounded-xl p-4 text-center">
-                    <p className="text-xl mb-1">{getRegionFlag(name)}</p>
-                    <p className="text-xs font-bold text-white mb-1">{getRegionShortName(name)}</p>
-                    <p className={`text-xs font-bold ${info.latest_status === 'Up' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                      {info.latest_status === 'Up' ? '✓ Operational' : '✗ Down'}
-                    </p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">{info.latest_ms}ms</p>
+        {/* Global Node Health */}
+        <div className="mb-12">
+          <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
+            <span className="h-px w-8 bg-slate-800"></span>
+            Global Network Infrastructure
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {data.global_nodes.map((node, i) => (
+              <div key={i} className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 backdrop-blur-sm flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`h-2 w-2 rounded-full ${node.status === 'Operational' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-amber-400 animate-pulse'}`} />
+                  <span className="text-sm font-bold">{node.name}</span>
+                </div>
+                <span className="text-xs font-mono text-slate-500">{node.latency}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Individual Services */}
+        <div className="space-y-4">
+          <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
+            <span className="h-px w-8 bg-slate-800"></span>
+            Service Health Details
+          </h2>
+          {data.websites.map((site) => (
+            <div key={site.id} className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 hover:bg-white/[0.04] transition-all flex items-center justify-between group">
+              <div className="flex items-center gap-6">
+                <div className={`h-12 w-12 rounded-2xl flex items-center justify-center text-xl border transition-colors ${
+                  site.status === 'Up' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 
+                  site.status === 'Paused' ? 'bg-slate-500/10 border-slate-500/20 text-slate-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                }`}>
+                  <i className={`fas ${site.status === 'Up' ? 'fa-globe' : site.status === 'Paused' ? 'fa-pause' : 'fa-exclamation-circle'}`} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg group-hover:text-[#00f09a] transition-colors">{site.url.replace(/^https?:\/\//, '')}</h3>
+                  <div className="flex items-center gap-3 text-[10px] uppercase font-black tracking-widest text-slate-500 mt-1">
+                    <span>{site.status === 'Up' ? 'Operational' : site.status}</span>
+                    <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
+                    <span>{site.latency}ms</span>
                   </div>
+                </div>
+              </div>
+              <div className="flex gap-1">
+                {[...Array(24)].map((_, i) => (
+                  <div key={i} className={`h-8 w-1.5 rounded-full ${site.status === 'Up' ? 'bg-emerald-500/40' : 'bg-emerald-500/10'}`} />
                 ))}
               </div>
             </div>
-          );
-        })()}
-
-        {/* Last 90 Checks */}
-        <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-6 backdrop-blur-sm mb-10">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-bold text-sm">Last 90 Checks</h2>
-            <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" /> Up
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-rose-400" /> Down
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-slate-500" /> Unknown
-              </span>
-            </div>
-          </div>
-
-          <div className="relative">
-            <div className="flex gap-[3px] items-end justify-center">
-              {checks.length > 0 ? checks.map((check, i) => {
-                const barColor =
-                  check.status === 'Up' ? 'bg-emerald-400 hover:bg-emerald-300' :
-                  check.status === 'Down' ? 'bg-rose-400 hover:bg-rose-300' :
-                  'bg-slate-500 hover:bg-slate-400';
-                const barHeight = check.status === 'Up'
-                  ? `${Math.max(20, Math.min(40, 40 - (check.response_ms || 0) / 50))}px`
-                  : '40px';
-
-                return (
-                  <div
-                    key={i}
-                    className="relative group"
-                    onMouseEnter={() => setHoveredCheck(i)}
-                    onMouseLeave={() => setHoveredCheck(null)}
-                  >
-                    <div
-                      className={`w-[6px] sm:w-[7px] rounded-full cursor-pointer transition-all ${barColor}`}
-                      style={{ height: barHeight }}
-                    />
-                    {hoveredCheck === i && (
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 bg-slate-800 border border-white/10 rounded-xl px-3 py-2 shadow-xl whitespace-nowrap pointer-events-none">
-                        <p className={`text-xs font-bold mb-1 ${
-                          check.status === 'Up' ? 'text-emerald-400' :
-                          check.status === 'Down' ? 'text-rose-400' :
-                          'text-slate-400'
-                        }`}>
-                          {check.status}
-                        </p>
-                        <p className="text-[10px] text-slate-400">
-                          {new Date(check.timestamp).toLocaleString()}
-                        </p>
-                        <p className="text-[10px] text-slate-500">
-                          {check.response_ms}ms · {getRegionFlag(check.region)} {getRegionShortName(check.region)}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                );
-              }) : (
-                <p className="text-slate-500 text-sm py-4">No checks recorded yet</p>
-              )}
-            </div>
-            {checks.length > 0 && (
-              <div className="flex justify-between mt-2">
-                <span className="text-[10px] text-slate-600 font-medium">Oldest</span>
-                <span className="text-[10px] text-slate-600 font-medium">Latest</span>
-              </div>
-            )}
-          </div>
+          ))}
         </div>
+
+        {/* Footer */}
+        <footer className="mt-20 pt-8 border-t border-white/5 text-center">
+           <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">System Check Completed: {new Date().toLocaleTimeString()}</span>
+           </div>
+           <p className="text-xs text-slate-600 font-medium">Powered by <span className="text-white">UpGuard Infrastructure Monitoring</span></p>
+        </footer>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-6">
-        <div className="max-w-3xl mx-auto px-4 flex items-center justify-between">
-          <p className="text-slate-600 text-xs font-medium">
-            Powered by <span className="text-slate-400 font-bold">UpGuard</span>
-          </p>
-          <p className="text-slate-600 text-xs font-medium">
-            {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };

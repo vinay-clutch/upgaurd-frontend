@@ -1,14 +1,16 @@
 import { API_BASE_URL } from './config';
 
-const request = async (endpoint, options = {}) => {
+const request = async (endpoint: string, options: any = {}) => {
   const token = localStorage.getItem('token');
-  const config = {
+  const config: RequestInit = {
+    method: options.method || 'GET',
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      ...options.headers,
     },
-    credentials: 'include',
-    ...options,
+    credentials: (options.credentials as RequestCredentials) || 'include',
+    body: options.body,
   };
   
   try {
@@ -16,6 +18,12 @@ const request = async (endpoint, options = {}) => {
     console.log("Fetching:", url);
     const response = await fetch(url, config);
     
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+      throw new Error('Unauthorized');
+    }
+
     let data;
     try {
       data = await response.json();
@@ -34,13 +42,13 @@ const request = async (endpoint, options = {}) => {
   }
 };
 
-const signup = (username, password, email) =>
+const signup = (username: any, password: any, email: any) =>
   request('/auth/signup', {
     method: 'POST',
     body: JSON.stringify({ username, password, email }),
   });
 
-const signin = (username, password) =>
+const signin = (username: any, password: any) =>
   request('/auth/signin', {
     method: 'POST',
     body: JSON.stringify({ username, password }),
@@ -53,39 +61,39 @@ const initiateGoogleAuth = () => {
 const getWebsites = () => request('/websites');
 const me = () => request('/auth/me');
 
-const updateEmail = (email) =>
+const updateEmail = (email: any) =>
   request('/websites/user/email', {
     method: 'PUT',
     body: JSON.stringify({ email }),
   });
 
-const createWebsite = (url) =>
+const createWebsite = (url: any) =>
   request('/websites', {
     method: 'POST',
     body: JSON.stringify({ url }),
   });
 
-const getWebsiteStatus = (websiteId) => request(`/websites/${websiteId}/status`);
+const getWebsiteStatus = (websiteId: any) => request(`/websites/${websiteId}/status`);
 
-const pauseWebsite = (websiteId) =>
+const pauseWebsite = (websiteId: any) =>
   request(`/websites/${websiteId}/pause`, { method: 'POST' });
 
-const resumeWebsite = (websiteId) =>
+const resumeWebsite = (websiteId: any) =>
   request(`/websites/${websiteId}/resume`, { method: 'POST' });
 
-const deleteWebsite = (websiteId) =>
+const deleteWebsite = (websiteId: any) =>
   request(`/websites/${websiteId}`, { method: 'DELETE' });
 
-const getIncidentHistory = (websiteId) =>
+const getIncidentHistory = (websiteId: any) =>
   request(`/websites/${websiteId}/incidents`);
 
-const getSslStatus = (websiteId) =>
+const getSslStatus = (websiteId: any) =>
   request(`/websites/${websiteId}/ssl`);
 
-const getPublicStatus = (websiteId) =>
+const getPublicStatus = (websiteId: any) =>
   request(`/websites/public/${websiteId}`);
 
-const updateDiscordWebhook = (webhookUrl) =>
+const updateDiscordWebhook = (webhookUrl: any) =>
   request('/websites/user/discord', {
     method: 'PUT',
     body: JSON.stringify({ webhook_url: webhookUrl }),
@@ -96,16 +104,16 @@ const removeDiscordWebhook = () =>
     method: 'DELETE',
   });
 
-const enableAnalytics = (websiteId) =>
+const enableAnalytics = (websiteId: any) =>
   request(`/analytics/${websiteId}/enable`, { method: 'POST' });
 
-const getAnalytics = (websiteId) =>
+const getAnalytics = (websiteId: any) =>
   request(`/analytics/${websiteId}`);
 
-const resolveError = (errorId) =>
+const resolveError = (errorId: any) =>
   request(`/analytics/errors/${errorId}/resolve`, { method: 'PATCH' });
 
-const downloadPdfReport = async (websiteId) => {
+const downloadPdfReport = async (websiteId: any) => {
   const token = localStorage.getItem('token');
   const response = await fetch(
     `${API_BASE_URL}/websites/${websiteId}/report/pdf`,
@@ -122,7 +130,7 @@ const downloadPdfReport = async (websiteId) => {
   }
 };
 
-const updateSlackWebhook = (webhookUrl) =>
+const updateSlackWebhook = (webhookUrl: any) =>
   request('/websites/user/slack', {
     method: 'PUT',
     body: JSON.stringify({ webhook_url: webhookUrl })
@@ -131,33 +139,33 @@ const updateSlackWebhook = (webhookUrl) =>
 const removeSlackWebhook = () =>
   request('/websites/user/slack', { method: 'DELETE' });
 
-const updateWebsiteTags = (websiteId, tags) =>
+const updateWebsiteTags = (websiteId: any, tags: any) =>
   request(`/websites/${websiteId}/tags`, {
     method: 'PUT',
     body: JSON.stringify({ tags })
   });
 
-const getSecurityHeaders = (websiteId) =>
+const getSecurityHeaders = (websiteId: any) =>
   request(`/websites/${websiteId}/security`);
 
-const updateCheckInterval = (websiteId, interval) =>
+const updateCheckInterval = (websiteId: any, interval: any) =>
   request(`/websites/${websiteId}/interval`, {
     method: 'PUT',
     body: JSON.stringify({ interval })
   });
 
-const setMaintenance = (websiteId, start, end, note) =>
+const setMaintenance = (websiteId: any, start: any, end: any, note: any) =>
   request(`/websites/${websiteId}/maintenance`, {
     method: 'PUT',
     body: JSON.stringify({ start, end, note })
   });
 
-const clearMaintenance = (websiteId) =>
+const clearMaintenance = (websiteId: any) =>
   request(`/websites/${websiteId}/maintenance`, {
     method: 'DELETE'
   });
 
-const exportCsv = async (websiteId, days = 30) => {
+const exportCsv = async (websiteId: any, days: number = 30) => {
   const token = localStorage.getItem('token');
   const response = await fetch(
     `${API_BASE_URL}/websites/${websiteId}/export/csv?days=${days}`,
@@ -178,13 +186,13 @@ const exportCsv = async (websiteId, days = 30) => {
   URL.revokeObjectURL(url);
 };
 
-const updateProfile = (name, email) =>
+const updateProfile = (name: any, email: any) =>
   request('/auth/update-profile', {
     method: 'PUT',
     body: JSON.stringify({ name, email }),
   });
 
-const changePassword = (currentPassword, newPassword) =>
+const changePassword = (currentPassword: any, newPassword: any) =>
   request('/auth/change-password', {
     method: 'PUT',
     body: JSON.stringify({ currentPassword, newPassword }),
@@ -195,10 +203,20 @@ const deleteAccount = () =>
     method: 'DELETE',
   });
 
+const getRemediation = (errorCode: any) =>
+  request(`/websites/remediation/suggest?error_code=${errorCode}`);
+
 const getDashboardStats = () => request('/websites/stats/summary');
 const getGlobalPerformance = () => request('/websites/stats/performance');
+const getPublicStatusByUsername = (username: any) => request(`/public/${username}`);
+
+const getLiveCount = (websiteId: any) =>
+  request(`/analytics/${websiteId}/live-count`);
+
+const getAIMLStats = () => request('/websites/aiml/stats');
 
 export const api = {
+
   request,
   signup,
   signin,
@@ -208,6 +226,8 @@ export const api = {
   getWebsiteStatus,
   getDashboardStats,
   getGlobalPerformance,
+  getRemediation,
+  getPublicStatusByUsername,
   me,
   updateEmail,
   updateProfile,
@@ -233,4 +253,7 @@ export const api = {
   setMaintenance,
   clearMaintenance,
   exportCsv,
+  getLiveCount,
+  getAIMLStats,
 };
+

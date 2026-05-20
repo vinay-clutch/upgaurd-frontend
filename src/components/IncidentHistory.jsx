@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { LoadingSpinner } from './LoadingSpinner';
 import { Navbar } from './Navbar';
+import { generateIncidentReport } from '../utils/pdfGenerator';
+import { toast } from 'react-hot-toast';
 
 export const IncidentHistory = () => {
   const { websiteId } = useParams();
@@ -10,6 +12,7 @@ export const IncidentHistory = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [generating, setGenerating] = useState(null);
 
   useEffect(() => {
     document.title = 'Incidents | UpGuard';
@@ -26,6 +29,26 @@ export const IncidentHistory = () => {
       setError(err.message || 'Failed to load incident history');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadReport = async (incident) => {
+    setGenerating(incident.id);
+    try {
+      // Fetch suitable remediation based on common errors
+      const errorCode = incident.status === 'Ongoing' ? '503' : '502';
+      const remediation = await api.getRemediation(errorCode).catch(() => null);
+      
+      generateIncidentReport(
+        incident, 
+        { url: data.website_url }, 
+        remediation
+      );
+      toast.success('Report generated successfully');
+    } catch (err) {
+      toast.error('Failed to generate report');
+    } finally {
+      setGenerating(null);
     }
   };
 
@@ -105,51 +128,67 @@ export const IncidentHistory = () => {
             {data.incidents.map((incident) => (
               <div
                 key={incident.id}
-                className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 backdrop-blur-sm hover:border-white/10 transition-all"
+                className="group relative bg-slate-900/40 border border-white/5 rounded-2xl p-6 backdrop-blur-sm hover:border-white/10 transition-all"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                  <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold w-fit ${
-                      incident.status === 'Ongoing'
-                        ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
-                        : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                    }`}
-                  >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                  <div className="flex items-center gap-3">
                     <span
-                      className={`w-1.5 h-1.5 rounded-full mr-2 ${
-                        incident.status === 'Ongoing' ? 'bg-rose-400 animate-pulse' : 'bg-emerald-400'
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                        incident.status === 'Ongoing'
+                          ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+                          : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
                       }`}
-                    />
-                    {incident.status}
-                  </span>
-                  <span className="text-slate-500 text-xs font-medium">
-                    Duration: {incident.duration_formatted}
-                  </span>
+                    >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full mr-2 ${
+                          incident.status === 'Ongoing' ? 'bg-rose-400 animate-pulse' : 'bg-emerald-400'
+                        }`}
+                      />
+                      {incident.status}
+                    </span>
+                    <span className="text-slate-500 text-xs font-medium">
+                      Duration: {incident.duration_formatted}
+                    </span>
+                  </div>
+                  
+                  <button
+                    onClick={() => handleDownloadReport(incident)}
+                    disabled={generating === incident.id}
+                    className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                  >
+                    {generating === incident.id ? (
+                      <i className="fas fa-spinner fa-spin" />
+                    ) : (
+                      <i className="fas fa-file-pdf text-[#00f09a]" />
+                    )}
+                    Post-Mortem PDF
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="bg-black/20 rounded-xl p-4 border border-white/5">
+                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">
                       Started At
                     </p>
-                    <p className="text-sm text-white font-medium">
+                    <p className="text-sm text-white font-mono">
                       {formatDate(incident.started_at)}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">
+                  <div className="bg-black/20 rounded-xl p-4 border border-white/5">
+                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">
                       Resolved At
                     </p>
-                    <p className={`text-sm font-medium ${incident.resolved_at ? 'text-white' : 'text-rose-400'}`}>
+                    <p className={`text-sm font-mono ${incident.resolved_at ? 'text-white' : 'text-rose-400 font-bold'}`}>
                       {formatDate(incident.resolved_at)}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">
-                      Region
+                  <div className="bg-black/20 rounded-xl p-4 border border-white/5">
+                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">
+                      Detection Node
                     </p>
-                    <p className="text-sm text-white font-medium">
-                      {incident.region || 'Unknown'}
+                    <p className="text-sm text-white font-medium flex items-center gap-2">
+                       <i className="fas fa-satellite-dish text-[10px] text-blue-400" />
+                       {incident.region || 'Mumbai, IN'}
                     </p>
                   </div>
                 </div>

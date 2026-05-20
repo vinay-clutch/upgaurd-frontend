@@ -1,6 +1,7 @@
 export function startKeepAlive() {
-  const BACKEND_URL = import.meta.env.VITE_API_URL || 
-    'https://upgaurd-backend-production.up.railway.app';
+  const BACKEND_URL = import.meta.env.VITE_API_URL 
+    ? import.meta.env.VITE_API_URL.replace('/api', '')
+    : 'http://localhost:8080';
   
   setInterval(async () => {
     try {

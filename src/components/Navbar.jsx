@@ -125,8 +125,28 @@ export const Navbar = () => {
           <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center group">
               <i className="fas fa-heartbeat text-[#00f09a] text-xl mr-2 group-hover:scale-110 transition-transform" />
-              <h1 className="text-xl font-bold tracking-tight text-white">UpGuard</h1>
+              <h1 className="text-xl font-bold tracking-tight text-white mr-6">UpGuard</h1>
             </Link>
+            {userProfile && (
+              <div className="hidden md:flex items-center space-x-2 border-l border-white/10 pl-6">
+                <Link 
+                  to="/dashboard" 
+                  className="px-3 py-1 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <Link 
+                  to="/ai-dashboard" 
+                  className="px-3 py-1 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition-colors flex items-center gap-1.5"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                  </span>
+                  AI/ML Engine
+                </Link>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center space-x-4">
