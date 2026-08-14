@@ -15,7 +15,7 @@ export const IncidentHistory = () => {
   const [generating, setGenerating] = useState(null);
 
   useEffect(() => {
-    document.title = 'Incidents | UpGuard';
+    document.title = 'Incidents | UptimeForge';
     if (websiteId) loadIncidents();
   }, [websiteId]);
 

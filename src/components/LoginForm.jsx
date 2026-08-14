@@ -57,39 +57,18 @@ export const LoginForm = ({ defaultIsLogin = true }) => {
     <div className="min-h-screen flex items-center justify-center bg-[#08080a] py-12 px-4 sm:px-6 lg:px-8 text-white">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
-        .login-logo {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          font-family: 'Outfit', sans-serif;
-          font-weight: 800;
-          font-size: 32px;
-          color: white;
-          text-decoration: none;
-          letter-spacing: -1px;
-          margin-bottom: 8px;
-        }
-        .logo-icon-small {
-          width: 28px;
-          height: 28px;
-          background: #00f09a;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          mask: url('https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg') no-repeat center;
-          -webkit-mask: url('https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg') no-repeat center;
-        }
       `}</style>
       <div className="max-w-md w-full space-y-8 relative z-10">
         <div>
           <Link to="/" className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-2 mb-8">
             <i className="fas fa-arrow-left" /> Back to home
           </Link>
-          <div className="login-logo">
-            <div className="logo-icon-small" />
-            UpGuard
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/uptimeforge-full-lockup.png" 
+              alt="UptimeForge" 
+              className="h-16 object-contain" 
+            />
           </div>
           <p className="mt-2 text-center text-sm text-slate-400 font-medium">
             {isLogin ? 'Sign in to your account' : 'Create a new account'}

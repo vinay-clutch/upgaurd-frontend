@@ -10,7 +10,7 @@ export const PublicStatus = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    document.title = `${username}'s Status | UpGuard`;
+    document.title = `${username}'s Status | UptimeForge`;
     loadStatus();
     const interval = setInterval(loadStatus, 60000);
     return () => clearInterval(interval);
@@ -53,7 +53,7 @@ export const PublicStatus = () => {
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 bg-[#00f09a] rounded-lg flex items-center justify-center text-black font-black italic shadow-lg shadow-[#00f09a]/20">U</div>
-            <span className="font-black tracking-tighter text-xl">UPGUARD <span className="text-slate-500 font-medium text-sm">/ {username}</span></span>
+            <span className="font-black tracking-tighter text-xl">UPTIMEFORGE <span className="text-slate-500 font-medium text-sm">/ {username}</span></span>
           </div>
           <div className="flex items-center gap-2">
              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/5 py-1 px-3 rounded-full border border-white/10">Public Status Page</span>
@@ -143,7 +143,7 @@ export const PublicStatus = () => {
               <div className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">System Check Completed: {new Date().toLocaleTimeString()}</span>
            </div>
-           <p className="text-xs text-slate-600 font-medium">Powered by <span className="text-white">UpGuard Infrastructure Monitoring</span></p>
+           <p className="text-xs text-slate-600 font-medium">Powered by <span className="text-white">UptimeForge Infrastructure Monitoring</span></p>
         </footer>
       </main>
     </div>

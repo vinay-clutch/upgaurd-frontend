@@ -17,7 +17,7 @@ export const RUMAnalytics = () => {
   const [siteId, setSiteId] = useState(null);
 
   useEffect(() => {
-    document.title = 'RUM Analytics | UpGuard';
+    document.title = 'RUM Analytics | UptimeForge';
     
     const init = async () => {
       setLoading(true);

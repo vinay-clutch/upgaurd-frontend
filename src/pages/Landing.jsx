@@ -149,7 +149,7 @@ export function Landing() {
 
   useEffect(() => {
     if (token) navigate("/dashboard");
-    document.title = "UpGuard — Industrial Grade Uptime Monitoring";
+    document.title = "UptimeForge — Industrial Grade Uptime Monitoring";
   }, [token, navigate]);
 
   return (
@@ -204,10 +204,14 @@ export function Landing() {
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="w-8 h-8 md:w-9 md:h-9 bg-[#00f09a] rounded-xl flex items-center justify-center text-[#050505] shadow-lg shadow-[#00f09a]/20 transition-transform group-hover:scale-110">
-              <i className="fas fa-shield-alt text-base md:text-lg" />
+            <div className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center transition-transform group-hover:scale-110">
+              <img 
+                src="/uptimeforge-icon-master.png" 
+                alt="UptimeForge" 
+                className="h-8 w-8 md:h-9 md:w-9 object-contain" 
+              />
             </div>
-            <span className="font-['Outfit'] font-black text-xl md:text-2xl tracking-tighter text-white drop-shadow-[0_0_10px_rgba(0,240,154,0.3)]">UpGuard</span>
+            <span className="font-['Outfit'] font-black text-xl md:text-2xl tracking-tighter text-white drop-shadow-[0_0_10px_rgba(0,240,154,0.3)]">UptimeForge</span>
           </div>
           
           <div className="flex items-center gap-3 md:gap-8">
@@ -278,7 +282,7 @@ export function Landing() {
                 <div className="w-3.5 h-3.5 rounded-full bg-[#28c840] border border-black/20" />
               </div>
               <div className="hidden md:flex flex-1 max-w-sm mx-auto bg-black/40 rounded-xl px-5 py-2.5 text-center text-[10px] text-slate-500 font-black tracking-widest uppercase border border-white/5">
-                app.upguard.io/dashboard
+                app.uptimeforge.io/dashboard
               </div>
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10" />
@@ -290,10 +294,14 @@ export function Landing() {
               {/* Real Sidebar */}
               <div className="hidden md:block w-80 border-r border-white/5 bg-[#0a0a0f] p-10 pt-14">
                 <div className="flex items-center gap-4 mb-16 px-2">
-                   <div className="w-6 h-6 bg-[#00f09a] rounded-lg flex items-center justify-center text-[#050505]">
-                      <i className="fas fa-shield-alt text-xs" />
+                   <div className="w-6 h-6 flex items-center justify-center">
+                      <img 
+                        src="/uptimeforge-icon-master.png" 
+                        alt="UptimeForge" 
+                        className="h-6 w-6 object-contain" 
+                      />
                    </div>
-                   <span className="text-[#00f09a] text-lg font-black tracking-widest uppercase">UpGuard</span>
+                   <span className="text-[#00f09a] text-lg font-black tracking-widest uppercase">UptimeForge</span>
                 </div>
                 
                 <div className="space-y-4">
@@ -409,7 +417,7 @@ export function Landing() {
                    </div>
                    <div className="space-y-10">
                       {[
-                        { time: '2m ago', event: 'UpGuard API', status: 'Recovered', color: '#00f09a' },
+                        { time: '2m ago', event: 'UptimeForge API', status: 'Recovered', color: '#00f09a' },
                         { time: '14m ago', event: 'US-EAST Node', status: 'Latency Spike', color: '#ea580c' },
                         { time: '1h ago', event: 'Asset: main-db', status: 'Check Success', color: '#06b6d4' }
                       ].map((item, i) => (
@@ -526,7 +534,7 @@ export function Landing() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,240,154,0.18)_0%,transparent_60%)] pointer-events-none" />
         <div className="max-w-[1200px] mx-auto text-center relative z-10">
           <h2 className="hero-h1 text-7xl sm:text-8xl md:text-[160px] font-black mb-10 text-white">Start monitoring.</h2>
-          <p className="text-slate-400 text-2xl md:text-5xl font-medium mb-24 max-w-6xl mx-auto leading-relaxed px-4 tracking-tight">Protect your infrastructure with UpGuard today. Industrial-grade tools for modern engineering.</p>
+          <p className="text-slate-400 text-2xl md:text-5xl font-medium mb-24 max-w-6xl mx-auto leading-relaxed px-4 tracking-tight">Protect your infrastructure with UptimeForge today. Industrial-grade tools for modern engineering.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
             <button 
               onClick={() => navigate("/register")}
@@ -547,11 +555,15 @@ export function Landing() {
       {/* ── FOOTER ── */}
       <footer className="py-32 px-6 border-t border-white/5 max-w-[1400px] mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-20">
-          <div className="flex items-center gap-6">
-            <div className="w-14 h-14 bg-[#00f09a] rounded-2xl flex items-center justify-center text-[#050505] shadow-2xl shadow-[#00f09a]/20">
-              <i className="fas fa-shield-alt text-2xl" />
+          <div className="flex items-center gap-6 pl-6">
+            <div className="w-14 h-14 flex items-center justify-center">
+              <img 
+                src="/uptimeforge-icon-master.png" 
+                alt="UptimeForge" 
+                className="h-14 w-14 object-contain" 
+              />
             </div>
-            <span className="font-['Outfit'] font-black text-4xl tracking-tighter text-white">UpGuard</span>
+            <span className="text-4xl font-bold tracking-tight text-white">UptimeForge</span>
           </div>
           
           <div className="flex flex-wrap justify-center gap-14 md:gap-24">
@@ -561,7 +573,7 @@ export function Landing() {
           </div>
           
           <div className="text-slate-700 text-[14px] font-black uppercase tracking-[0.6em] text-center md:text-right">
-            © 2026 UpGuard Systems — Established for Resilience
+            © 2026 UptimeForge Systems — Established for Resilience
           </div>
         </div>
       </footer>

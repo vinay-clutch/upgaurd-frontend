@@ -17,7 +17,7 @@ export const Profile = () => {
     const [activeTab, setActiveTab] = useState('account');
 
     useEffect(() => {
-        document.title = 'Profile | UpGuard';
+        document.title = 'Profile | UptimeForge';
         if (userProfile) {
             setName(userProfile.name || '');
             setEmail(userProfile.email || '');

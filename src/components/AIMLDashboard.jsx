@@ -18,7 +18,7 @@ export const AIMLDashboard = () => {
   const [activeTab, setActiveTab] = useState('decision_tree');
 
   useEffect(() => {
-    document.title = 'AI/ML Brain Engine | UpGuard';
+    document.title = 'AI/ML Brain Engine | UptimeForge';
     
     const fetchData = async () => {
       try {
@@ -165,7 +165,7 @@ export const AIMLDashboard = () => {
             AI/ML Intelligence Dashboard
           </h1>
           <p className="text-sm text-slate-400 mt-2 max-w-2xl">
-            Understand and verify how UpGuard's 5 proprietary machine learning models analyze system failures, predict saturation, and prevent notification floods.
+            Understand and verify how UptimeForge's 5 proprietary machine learning models analyze system failures, predict saturation, and prevent notification floods.
           </p>
         </header>
 

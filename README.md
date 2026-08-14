@@ -1,6 +1,6 @@
-# UpGuard Frontend — Real-Time Website Monitoring Dashboard
+# UptimeForge Frontend — Real-Time Website Monitoring Dashboard
 
-> 🎯 The beautiful, animated frontend for UpGuard — featuring a live AI/ML Brain Engine dashboard, real-user monitoring, security scanning, and predictive intelligence visualizations.
+> 🎯 The beautiful, animated frontend for UptimeForge — featuring a live AI/ML Brain Engine dashboard, real-user monitoring, security scanning, and predictive intelligence visualizations.
 
 ---
 
@@ -42,8 +42,8 @@ Make sure you have:
 
 ### 2. Clone the repo
 ```bash
-git clone https://github.com/vinay-clutch/upgaurd-frontend.git
-cd upgaurd-frontend
+git clone https://github.com/vinay-clutch/uptimeforge-frontend.git
+cd uptimeforge-frontend
 ```
 
 ### 3. Install dependencies
@@ -121,11 +121,11 @@ For the full experience you need both running at the same time:
 
 ```bash
 # Terminal 1 — Backend API
-cd upgaurd-backend
+cd uptimeforge-backend
 npm run dev
 
 # Terminal 2 — Frontend App
-cd upgaurd-frontend
+cd uptimeforge-frontend
 npm run dev
 ```
 

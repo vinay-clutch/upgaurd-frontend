@@ -28,7 +28,7 @@ export const Dashboard = () => {
     : websites.filter(s => s.tags?.includes(activeFilter));
 
   useEffect(() => {
-    document.title = 'Dashboard | UpGuard';
+    document.title = 'Dashboard | UptimeForge';
     void loadData();
     const interval = setInterval(loadData, 30000);
     

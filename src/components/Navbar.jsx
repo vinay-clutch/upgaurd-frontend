@@ -124,8 +124,12 @@ export const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center group">
-              <i className="fas fa-heartbeat text-[#00f09a] text-xl mr-2 group-hover:scale-110 transition-transform" />
-              <h1 className="text-xl font-bold tracking-tight text-white mr-6">UpGuard</h1>
+              <img 
+                src="/uptimeforge-icon-master.png" 
+                alt="UptimeForge" 
+                className="h-8 w-8 object-contain mr-3 group-hover:scale-110 transition-transform" 
+              />
+              <h1 className="text-xl font-bold tracking-tight text-white mr-6">UptimeForge</h1>
             </Link>
             {userProfile && (
               <div className="hidden md:flex items-center space-x-2 border-l border-white/10 pl-6">
